@@ -259,5 +259,22 @@ void ChPitmanArm::LogConstraintViolations() {
     }
 }
 
+void ChPitmanArm::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
+    ChPart::ExportOutputChannels(jsonDocument);
+
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
+
+    rapidjson::Value bodyArray(rapidjson::kArrayType);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_link, allocator), allocator);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_arm, allocator), allocator);
+    jsonDocument.AddMember("bodies", bodyArray, allocator);
+
+    rapidjson::Value jointArray(rapidjson::kArrayType);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_revolute, allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_revsph, allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_universal, allocator), allocator);
+    jsonDocument.AddMember("joints", jointArray, allocator);
+}
+
 }  // end namespace vehicle
 }  // end namespace chrono

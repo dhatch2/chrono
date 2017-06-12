@@ -149,5 +149,15 @@ void ChRigidChassis::RemoveVisualizationAssets() {
     m_body->GetAssets().clear();
 }
 
+void ChRigidChassis::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
+    ChPart::ExportOutputChannels(jsonDocument);
+
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
+
+    rapidjson::Value bodyArray(rapidjson::kArrayType);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_body, allocator), allocator);
+    jsonDocument.AddMember("bodies", bodyArray, allocator);
+}
+
 }  // end namespace vehicle
 }  // end namespace chrono

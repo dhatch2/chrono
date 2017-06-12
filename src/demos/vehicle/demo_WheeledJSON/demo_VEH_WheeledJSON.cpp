@@ -114,7 +114,7 @@ ChVector<> trackPoint(0.0, 0.0, 1.75);
 double tend = 20.0;
 
 // Output directories (Povray only)
-const std::string out_dir = "../VEHICLE";
+const std::string out_dir = "../WHEELED_JSON";
 const std::string pov_dir = out_dir + "/POVRAY";
 
 // =============================================================================
@@ -206,6 +206,24 @@ int main(int argc, char* argv[]) {
 
     driver.Initialize();
 
+    // -----------------
+    // Initialize output
+    // -----------------
+
+    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
+        std::cout << "Error creating directory " << out_dir << std::endl;
+        return 1;
+    }
+    if (ChFileutils::MakeDirectory(pov_dir.c_str()) < 0) {
+        std::cout << "Error creating directory " << pov_dir << std::endl;
+        return 1;
+    }
+
+    // Generate JSON information with available output channels
+    std::string out_json = vehicle.GenerateOutputChannelList();
+    std::cout << out_json << std::endl;
+    vehicle.GenerateOutputChannelList(out_dir + "/output_channels.json");
+
     // ---------------
     // Simulation loop
     // ---------------
@@ -291,15 +309,6 @@ int main(int argc, char* argv[]) {
 #else
 
     int render_frame = 0;
-
-    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
-        std::cout << "Error creating directory " << out_dir << std::endl;
-        return 1;
-    }
-    if (ChFileutils::MakeDirectory(pov_dir.c_str()) < 0) {
-        std::cout << "Error creating directory " << pov_dir << std::endl;
-        return 1;
-    }
 
     char filename[100];
 

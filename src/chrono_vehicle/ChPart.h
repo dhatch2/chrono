@@ -24,6 +24,8 @@
 #include "chrono_vehicle/ChApiVehicle.h"
 #include "chrono_vehicle/ChSubsysDefs.h"
 
+#include "chrono_thirdparty/rapidjson/document.h"
+
 namespace chrono {
 namespace vehicle {
 
@@ -109,7 +111,18 @@ class CH_VEHICLE_API ChPart {
         const ChMatrix33<>& body_rot      ///< body absolute orientation matrix
         );
 
+    /// Export this part's available output channels to the specified JSON object.
+    /// The base class implementation only includes the part name.  Derived classes
+    /// should override this function and first invoke the base class implementation.
+    virtual void ExportOutputChannels(rapidjson::Document& jsonDocument) const;
+
   protected:
+    static rapidjson::Value BodyOutputChannels(std::shared_ptr<ChBody> body,
+                                               rapidjson::Document::AllocatorType& allocator);
+
+    static rapidjson::Value JointOutputChannels(std::shared_ptr<ChLink> link,
+                                                rapidjson::Document::AllocatorType& allocator);
+
     std::string m_name;
 
     float m_friction;       ///< contact coefficient of friction

@@ -471,5 +471,37 @@ void ChDoubleWishbone::AddVisualizationUpright(std::shared_ptr<ChBody> upright,
     upright->AddAsset(col);
 }
 
+void ChDoubleWishbone::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
+    ChPart::ExportOutputChannels(jsonDocument);
+
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
+
+    rapidjson::Value bodyArray(rapidjson::kArrayType);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_spindle[0], allocator), allocator);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_spindle[1], allocator), allocator);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_upright[0], allocator), allocator);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_upright[1], allocator), allocator);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_UCA[0], allocator), allocator);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_UCA[1], allocator), allocator);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_LCA[0], allocator), allocator);
+    bodyArray.PushBack(ChPart::BodyOutputChannels(m_LCA[1], allocator), allocator);
+    jsonDocument.AddMember("bodies", bodyArray, allocator);
+
+    rapidjson::Value jointArray(rapidjson::kArrayType);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_revolute[0], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_revolute[1], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_revoluteUCA[0], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_revoluteUCA[1], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_sphericalUCA[0], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_sphericalUCA[1], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_revoluteLCA[0], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_revoluteLCA[1], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_sphericalLCA[0], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_sphericalLCA[1], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_distTierod[0], allocator), allocator);
+    jointArray.PushBack(ChPart::JointOutputChannels(m_distTierod[1], allocator), allocator);
+    jsonDocument.AddMember("joints", jointArray, allocator);
+}
+
 }  // end namespace vehicle
 }  // end namespace chrono

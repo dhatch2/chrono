@@ -162,6 +162,8 @@ class CH_VEHICLE_API ChPitmanArm : public ChSteering {
     // Points for arm visualization
     ChVector<> m_pC;
     ChVector<> m_pL;
+
+    virtual void ExportOutputChannels(rapidjson::Document& jsonDocument) const override;
 };
 
 /// @} vehicle_wheeled_steering

@@ -162,6 +162,16 @@ class CH_VEHICLE_API ChWheeledVehicle : public ChVehicle {
     /// Log current constraint violations.
     virtual void LogConstraintViolations() override;
 
+    /// Return a JSON string with information on the available output channels.
+    /// These include body positions, velocity and accelerations, joint frames and reaction forces,
+    /// states of spring-damper elements, etc.
+    std::string GenerateOutputChannelList() const;
+
+    /// Write a JSON-formal file with information on the available output channels.
+    /// These include body positions, velocity and accelerations, joint frames and reaction forces,
+    /// states of spring-damper elements, etc.
+    void GenerateOutputChannelList(const std::string& filename) const;
+
   protected:
     ChSuspensionList m_suspensions;            ///< list of handles to suspension subsystems
     ChAntirollbarList m_antirollbars;          ///< list of handles to antirollbar subsystems (optional)

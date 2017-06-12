@@ -180,8 +180,14 @@ int main(int argc, char* argv[]) {
         terrain.ExportMeshPovray(out_dir);
     }
 
+    // Initialize output file for driver inputs
     std::string driver_file = out_dir + "/driver_inputs.txt";
     utils::CSV_writer driver_csv(" ");
+
+    // Generate JSON information with available output channels
+    std::string out_json = my_hmmwv.GetVehicle().GenerateOutputChannelList();
+    std::cout << out_json << std::endl;
+    my_hmmwv.GetVehicle().GenerateOutputChannelList(out_dir + "/output_channels.json");
 
     // ------------------------
     // Create the driver system

@@ -18,6 +18,8 @@
 
 #include "chrono_vehicle/ChPart.h"
 
+#include "chrono_thirdparty/rapidjson/stringbuffer.h"
+
 namespace chrono {
 namespace vehicle {
 
@@ -78,6 +80,39 @@ ChMatrix33<> ChPart::TransformInertiaMatrix(
     ChMatrix33<> tmp;
     tmp.MatrTMultiply(R, J_vehicle);
     return tmp * R;
+}
+
+// -----------------------------------------------------------------------------
+// Default implementation of the function ExportOutputChannels.
+// An override in a derived class must first invoke this method.
+// -----------------------------------------------------------------------------
+void ChPart::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
+    jsonDocument.AddMember("name", rapidjson::StringRef(m_name.c_str()), jsonDocument.GetAllocator());
+}
+
+rapidjson::Value ChPart::BodyOutputChannels(std::shared_ptr<ChBody> body,
+                                            rapidjson::Document::AllocatorType& allocator) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.SetObject();
+    obj.AddMember("name", rapidjson::StringRef(body->GetName()), allocator);
+    obj.AddMember("position", true, allocator);
+    obj.AddMember("velocity", true, allocator);
+    obj.AddMember("acceleration", true, allocator);
+
+    return obj;
+}
+
+rapidjson::Value ChPart::JointOutputChannels(std::shared_ptr<ChLink> link,
+                                             rapidjson::Document::AllocatorType& allocator) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.SetObject();
+    obj.AddMember("name", rapidjson::StringRef(link->GetName()), allocator);
+    obj.AddMember("frame position", true, allocator);
+    obj.AddMember("frame orientation", true, allocator);
+    obj.AddMember("reaction force", true, allocator);
+    obj.AddMember("reaction torque", true, allocator);
+
+    return obj;
 }
 
 }  // end namespace vehicle

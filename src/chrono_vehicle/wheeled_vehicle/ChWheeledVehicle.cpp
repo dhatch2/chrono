@@ -16,7 +16,13 @@
 //
 // =============================================================================
 
+#include <fstream>
+
 #include "chrono_vehicle/wheeled_vehicle/ChWheeledVehicle.h"
+
+#include "chrono_thirdparty/rapidjson/document.h"
+#include "chrono_thirdparty/rapidjson/prettywriter.h"
+#include "chrono_thirdparty/rapidjson/stringbuffer.h"
 
 namespace chrono {
 namespace vehicle {
@@ -186,6 +192,66 @@ void ChWheeledVehicle::LogConstraintViolations() {
     }
 
     GetLog().SetNumFormat("%g");
+}
+
+std::string ChWheeledVehicle::GenerateOutputChannelList() const {
+    rapidjson::Document jsonDocument;
+    jsonDocument.SetObject();
+
+    {
+        rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
+        jsonSubDocument.SetObject();
+        m_chassis->ExportOutputChannels(jsonSubDocument);
+        ////jsonSubDocument.AddMember("name", m_chassis->GetName(), jsonDocument.GetAllocator());
+        jsonDocument.AddMember("chassis", jsonSubDocument, jsonDocument.GetAllocator());
+    }
+
+    rapidjson::Value suspArray(rapidjson::kArrayType);
+    for (size_t i = 0; i < m_suspensions.size(); i++) {
+        rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
+        jsonSubDocument.SetObject();
+        m_suspensions[i]->ExportOutputChannels(jsonSubDocument);
+        suspArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
+    }
+    jsonDocument.AddMember("suspension", suspArray, jsonDocument.GetAllocator());
+
+    rapidjson::Value sterringArray(rapidjson::kArrayType);
+    for (size_t i = 0; i < m_steerings.size(); i++) {
+        rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
+        jsonSubDocument.SetObject();
+        m_steerings[i]->ExportOutputChannels(jsonSubDocument);
+        sterringArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
+    }
+    jsonDocument.AddMember("steering", sterringArray, jsonDocument.GetAllocator());
+
+    rapidjson::Value brakeArray(rapidjson::kArrayType);
+    for (size_t i = 0; i < m_brakes.size(); i++) {
+        rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
+        jsonSubDocument.SetObject();
+        m_brakes[i]->ExportOutputChannels(jsonSubDocument);
+        brakeArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
+    }
+    jsonDocument.AddMember("brake", brakeArray, jsonDocument.GetAllocator());
+
+    rapidjson::Value arArray(rapidjson::kArrayType);
+    for (size_t i = 0; i < m_antirollbars.size(); i++) {
+        rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
+        jsonSubDocument.SetObject();
+        m_antirollbars[i]->ExportOutputChannels(jsonSubDocument);
+        arArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
+    }
+    jsonDocument.AddMember("anti-roll bar", arArray, jsonDocument.GetAllocator());
+
+    rapidjson::StringBuffer jsonBuffer;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> jsonWriter(jsonBuffer);
+    jsonDocument.Accept(jsonWriter);
+
+    return jsonBuffer.GetString();
+}
+
+void ChWheeledVehicle::GenerateOutputChannelList(const std::string& filename) const {
+    std::ofstream of(filename);
+    of << GenerateOutputChannelList();
 }
 
 }  // end namespace vehicle
