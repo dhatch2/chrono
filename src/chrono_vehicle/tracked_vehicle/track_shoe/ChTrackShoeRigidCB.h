@@ -38,6 +38,9 @@ class CH_VEHICLE_API ChTrackShoeRigidCB : public ChTrackShoe {
 
     virtual ~ChTrackShoeRigidCB() {}
 
+    /// Get the name of the vehicle subsystem template.
+    virtual std::string GetTemplateName() const override { return "TrackShoeRigidCB"; }
+
     /// Get the mass of the track shoe.
     virtual double GetMass() const override;
     /// Return the pitch length of the track shoe.

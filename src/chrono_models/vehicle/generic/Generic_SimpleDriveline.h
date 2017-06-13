@@ -30,6 +30,9 @@ namespace generic {
         Generic_SimpleDriveline(const std::string& name);
         virtual ~Generic_SimpleDriveline() {}
 
+        /// Get the name of the vehicle subsystem template.
+        virtual std::string GetTemplateName() const override { return "Generic_SimpleDriveline"; }
+
         /// Return the number of driven axles.
         virtual int GetNumDrivenAxles() const final override { return 1; }
 

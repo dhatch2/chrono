@@ -50,6 +50,9 @@ class CH_VEHICLE_API ChTrackAssemblyRigidCB : public ChTrackAssembly {
 
     virtual ~ChTrackAssemblyRigidCB() {}
 
+    /// Get the name of the vehicle subsystem template.
+    virtual std::string GetTemplateName() const override { return "TrackAssemblyRigidCB"; }
+
     /// Get the number of track shoes.
     virtual size_t GetNumTrackShoes() const override { return m_shoes.size(); }
 

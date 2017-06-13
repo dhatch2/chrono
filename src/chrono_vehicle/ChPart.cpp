@@ -87,7 +87,10 @@ ChMatrix33<> ChPart::TransformInertiaMatrix(
 // An override in a derived class must first invoke this method.
 // -----------------------------------------------------------------------------
 void ChPart::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
+    std::string template_name = GetTemplateName();
     jsonDocument.AddMember("name", rapidjson::StringRef(m_name.c_str()), jsonDocument.GetAllocator());
+    jsonDocument.AddMember("template", rapidjson::Value(template_name.c_str(), jsonDocument.GetAllocator()).Move(),
+                           jsonDocument.GetAllocator());
 }
 
 rapidjson::Value ChPart::BodyOutputChannels(std::shared_ptr<ChBody> body,
