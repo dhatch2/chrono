@@ -61,5 +61,24 @@ void ChChassis::Initialize(ChSystem* system,
     system->Add(m_body);
 }
 
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+void ChChassis::AddMarker(const std::string& name, const ChVector<>& loc) {
+    // Do nothing if the chassis is not yet initialized
+    if (!m_body)
+        return;
+
+    // Note: marker local positions are assumed to be relative to the centroidal frame
+    //       of the associated body.
+    ChVector<> loc_com = m_body->GetFrame_REF_to_COG().TransformPointLocalToParent(loc);
+
+    // Create the marker, attach it to the chassis body, add it to the list
+    auto marker = std::make_shared<ChMarker>();
+    marker->SetNameString(m_name + "_" + name);
+    marker->Impose_Rel_Coord(ChCoordsys<>(loc_com));
+    m_body->AddMarker(marker);
+    m_markers.push_back(marker);
+}
+
 }  // end namespace vehicle
 }  // end namespace chrono

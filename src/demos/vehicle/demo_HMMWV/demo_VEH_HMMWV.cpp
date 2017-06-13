@@ -133,6 +133,13 @@ int main(int argc, char* argv[]) {
     my_hmmwv.SetWheelVisualizationType(wheel_vis_type);
     my_hmmwv.SetTireVisualizationType(tire_vis_type);
 
+    // Add user-defined markers on the chassis body.
+    ChVector<> driver_local_pos = my_hmmwv.GetChassis()->GetLocalDriverCoordsys().pos;
+    ChVector<> com_local_pos = my_hmmwv.GetChassis()->GetLocalPosCOM();
+    my_hmmwv.GetChassis()->AddMarker("driver", driver_local_pos);
+    my_hmmwv.GetChassis()->AddMarker("com", com_local_pos);
+    auto chassis_markers = my_hmmwv.GetChassis()->GetMarkers();
+
     // Create the terrain
     RigidTerrain terrain(my_hmmwv.GetSystem());
     terrain.SetContactFrictionCoefficient(0.9f);
@@ -264,6 +271,12 @@ int main(int argc, char* argv[]) {
             GetLog() << "\n\n============ System Information ============\n";
             GetLog() << "Time = " << time << "\n\n";
             my_hmmwv.DebugLog(OUT_SPRINGS | OUT_SHOCKS | OUT_CONSTRAINTS);
+
+            ChVector<> marker_driver = chassis_markers[0]->GetAbsCoord().pos;
+            ChVector<> marker_com = chassis_markers[1]->GetAbsCoord().pos;
+            GetLog() << "Markers\n";
+            std::cout << "  Driver loc:      " << marker_driver.x() << " " << marker_driver.y() << " " << marker_driver.z() << std::endl;
+            std::cout << "  Chassis COM loc: " << marker_com.x() << " " << marker_com.y() << " " << marker_com.z() << std::endl;
         }
 
         // Collect output data from modules (for inter-module communication)
