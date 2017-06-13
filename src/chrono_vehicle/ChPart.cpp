@@ -118,5 +118,17 @@ rapidjson::Value ChPart::JointOutputChannels(std::shared_ptr<ChLink> link,
     return obj;
 }
 
+rapidjson::Value ChPart::MarkerOutputChannels(std::shared_ptr<ChMarker> marker,
+    rapidjson::Document::AllocatorType& allocator) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.SetObject();
+    obj.AddMember("name", rapidjson::StringRef(marker->GetName()), allocator);
+    obj.AddMember("body name", rapidjson::StringRef(marker->GetBody()->GetName()), allocator);
+    obj.AddMember("frame position", true, allocator);
+    obj.AddMember("frame orientation", true, allocator);
+
+    return obj;
+}
+
 }  // end namespace vehicle
 }  // end namespace chrono

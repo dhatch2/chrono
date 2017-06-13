@@ -126,6 +126,9 @@ class CH_VEHICLE_API ChPart {
     static rapidjson::Value JointOutputChannels(std::shared_ptr<ChLink> link,
                                                 rapidjson::Document::AllocatorType& allocator);
 
+    static rapidjson::Value MarkerOutputChannels(std::shared_ptr<ChMarker> marker,
+                                                 rapidjson::Document::AllocatorType& allocator);
+
     std::string m_name;
 
     float m_friction;       ///< contact coefficient of friction

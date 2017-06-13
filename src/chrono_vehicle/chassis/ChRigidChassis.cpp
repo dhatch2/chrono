@@ -157,6 +157,13 @@ void ChRigidChassis::ExportOutputChannels(rapidjson::Document& jsonDocument) con
     rapidjson::Value bodyArray(rapidjson::kArrayType);
     bodyArray.PushBack(ChPart::BodyOutputChannels(m_body, allocator), allocator);
     jsonDocument.AddMember("bodies", bodyArray, allocator);
+
+    auto markers = m_body->GetMarkerList();
+    rapidjson::Value markerArray(rapidjson::kArrayType);
+    for (auto marker : m_markers) {
+        markerArray.PushBack(ChPart::MarkerOutputChannels(marker, allocator), allocator);
+    }
+    jsonDocument.AddMember("markers", markerArray, allocator);
 }
 
 }  // end namespace vehicle
