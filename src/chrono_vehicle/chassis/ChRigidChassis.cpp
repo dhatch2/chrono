@@ -152,18 +152,11 @@ void ChRigidChassis::RemoveVisualizationAssets() {
 void ChRigidChassis::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
     ChPart::ExportOutputChannels(jsonDocument);
 
-    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
+    std::vector<std::shared_ptr<ChBody>> bodies;
+    bodies.push_back(m_body);
+    ChPart::ExportBodyOutputChannels(jsonDocument, bodies);
 
-    rapidjson::Value bodyArray(rapidjson::kArrayType);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_body, allocator), allocator);
-    jsonDocument.AddMember("bodies", bodyArray, allocator);
-
-    auto markers = m_body->GetMarkerList();
-    rapidjson::Value markerArray(rapidjson::kArrayType);
-    for (auto marker : m_markers) {
-        markerArray.PushBack(ChPart::MarkerOutputChannels(marker, allocator), allocator);
-    }
-    jsonDocument.AddMember("markers", markerArray, allocator);
+    ChPart::ExportMarkerOutputChannels(jsonDocument, m_markers);
 }
 
 }  // end namespace vehicle

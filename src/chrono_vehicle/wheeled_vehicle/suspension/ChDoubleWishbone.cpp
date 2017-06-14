@@ -474,45 +474,43 @@ void ChDoubleWishbone::AddVisualizationUpright(std::shared_ptr<ChBody> upright,
 void ChDoubleWishbone::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
     ChPart::ExportOutputChannels(jsonDocument);
 
-    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
+    std::vector<std::shared_ptr<ChBody>> bodies;
+    bodies.push_back(m_spindle[0]);
+    bodies.push_back(m_spindle[1]);
+    bodies.push_back(m_upright[0]);
+    bodies.push_back(m_upright[1]);
+    bodies.push_back(m_UCA[0]);
+    bodies.push_back(m_UCA[1]);
+    bodies.push_back(m_LCA[0]);
+    bodies.push_back(m_LCA[1]);
+    ChPart::ExportBodyOutputChannels(jsonDocument, bodies);
 
-    rapidjson::Value bodyArray(rapidjson::kArrayType);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_spindle[0], allocator), allocator);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_spindle[1], allocator), allocator);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_upright[0], allocator), allocator);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_upright[1], allocator), allocator);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_UCA[0], allocator), allocator);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_UCA[1], allocator), allocator);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_LCA[0], allocator), allocator);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_LCA[1], allocator), allocator);
-    jsonDocument.AddMember("bodies", bodyArray, allocator);
+    std::vector<std::shared_ptr<ChShaft>> shafts;
+    shafts.push_back(m_axle[0]);
+    shafts.push_back(m_axle[1]);
+    ChPart::ExportShaftOutputChannels(jsonDocument, shafts);
 
-    rapidjson::Value shaftArray(rapidjson::kArrayType);
-    shaftArray.PushBack(ChPart::ShaftOutputChannels(m_axle[0], allocator), allocator);
-    shaftArray.PushBack(ChPart::ShaftOutputChannels(m_axle[1], allocator), allocator);
-    jsonDocument.AddMember("shafts", shaftArray, allocator);
+    std::vector<std::shared_ptr<ChLink>> joints;
+    joints.push_back(m_revolute[0]);
+    joints.push_back(m_revolute[1]);
+    joints.push_back(m_revoluteUCA[0]);
+    joints.push_back(m_revoluteUCA[1]);
+    joints.push_back(m_sphericalUCA[0]);
+    joints.push_back(m_sphericalUCA[1]);
+    joints.push_back(m_revoluteLCA[0]);
+    joints.push_back(m_revoluteLCA[1]);
+    joints.push_back(m_sphericalLCA[0]);
+    joints.push_back(m_sphericalLCA[1]);
+    joints.push_back(m_distTierod[0]);
+    joints.push_back(m_distTierod[1]);
+    ChPart::ExportJointOutputChannels(jsonDocument, joints);
 
-    rapidjson::Value jointArray(rapidjson::kArrayType);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_revolute[0], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_revolute[1], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_revoluteUCA[0], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_revoluteUCA[1], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_sphericalUCA[0], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_sphericalUCA[1], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_revoluteLCA[0], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_revoluteLCA[1], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_sphericalLCA[0], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_sphericalLCA[1], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_distTierod[0], allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_distTierod[1], allocator), allocator);
-    jsonDocument.AddMember("joints", jointArray, allocator);
-
-    rapidjson::Value linspringArray(rapidjson::kArrayType);
-    linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_spring[0], allocator), allocator);
-    linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_spring[1], allocator), allocator);
-    linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_shock[0], allocator), allocator);
-    linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_shock[1], allocator), allocator);
-    jsonDocument.AddMember("linear spring-dampers", linspringArray, allocator);
+    std::vector<std::shared_ptr<ChLinkSpringCB>> springs;
+    springs.push_back(m_spring[0]);
+    springs.push_back(m_spring[1]);
+    springs.push_back(m_shock[0]);
+    springs.push_back(m_shock[1]);
+    ChPart::ExportLinSpringOutputChannels(jsonDocument, springs);
 }
 
 }  // end namespace vehicle

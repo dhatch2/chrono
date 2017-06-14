@@ -84,7 +84,9 @@ ChMatrix33<> ChPart::TransformInertiaMatrix(
 
 // -----------------------------------------------------------------------------
 // Default implementation of the function ExportOutputChannels.
-// An override in a derived class must first invoke this method.
+// Derived classes should override this function and first invoke this base
+// class implementation, followed by calls to the various static
+// Export***OutputChannels functions, as appropriate.
 // -----------------------------------------------------------------------------
 void ChPart::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
     std::string template_name = GetTemplateName();
@@ -93,74 +95,103 @@ void ChPart::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
                            jsonDocument.GetAllocator());
 }
 
-rapidjson::Value ChPart::BodyOutputChannels(std::shared_ptr<ChBody> body,
-                                            rapidjson::Document::AllocatorType& allocator) {
-    rapidjson::Value obj(rapidjson::kObjectType);
-    obj.SetObject();
-    obj.AddMember("name", rapidjson::StringRef(body->GetName()), allocator);
-    obj.AddMember("position", true, allocator);
-    obj.AddMember("velocity", true, allocator);
-    obj.AddMember("acceleration", true, allocator);
+void ChPart::ExportBodyOutputChannels(rapidjson::Document& jsonDocument, std::vector<std::shared_ptr<ChBody>> bodies) {
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
 
-    return obj;
+    rapidjson::Value jsonArray(rapidjson::kArrayType);
+    for (auto body : bodies) {
+        rapidjson::Value obj(rapidjson::kObjectType);
+        obj.SetObject();
+        obj.AddMember("name", rapidjson::StringRef(body->GetName()), allocator);
+        obj.AddMember("position", true, allocator);
+        obj.AddMember("velocity", true, allocator);
+        obj.AddMember("acceleration", true, allocator);
+        jsonArray.PushBack(obj, allocator);
+    }
+    jsonDocument.AddMember("bodies", jsonArray, allocator);
 }
 
-rapidjson::Value ChPart::ShaftOutputChannels(std::shared_ptr<ChShaft> shaft,
-    rapidjson::Document::AllocatorType& allocator) {
-    rapidjson::Value obj(rapidjson::kObjectType);
-    obj.SetObject();
-    obj.AddMember("name", rapidjson::StringRef(shaft->GetName()), allocator);
-    obj.AddMember("angular velocity", true, allocator);
-    obj.AddMember("reaction torque", true, allocator);
+void ChPart::ExportShaftOutputChannels(rapidjson::Document& jsonDocument,
+                                       std::vector<std::shared_ptr<ChShaft>> shafts) {
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
 
-    return obj;
+    rapidjson::Value jsonArray(rapidjson::kArrayType);
+    for (auto shaft : shafts) {
+        rapidjson::Value obj(rapidjson::kObjectType);
+        obj.SetObject();
+        obj.AddMember("name", rapidjson::StringRef(shaft->GetName()), allocator);
+        obj.AddMember("angular velocity", true, allocator);
+        obj.AddMember("reaction torque", true, allocator);
+        jsonArray.PushBack(obj, allocator);
+    }
+    jsonDocument.AddMember("shafts", jsonArray, allocator);
 }
 
-rapidjson::Value ChPart::JointOutputChannels(std::shared_ptr<ChLink> link,
-                                             rapidjson::Document::AllocatorType& allocator) {
-    rapidjson::Value obj(rapidjson::kObjectType);
-    obj.SetObject();
-    obj.AddMember("name", rapidjson::StringRef(link->GetName()), allocator);
-    obj.AddMember("frame position", true, allocator);
-    obj.AddMember("frame orientation", true, allocator);
-    obj.AddMember("reaction force", true, allocator);
-    obj.AddMember("reaction torque", true, allocator);
+void ChPart::ExportJointOutputChannels(rapidjson::Document& jsonDocument, std::vector<std::shared_ptr<ChLink>> joints) {
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
 
-    return obj;
+    rapidjson::Value jsonArray(rapidjson::kArrayType);
+    for (auto joint : joints) {
+        rapidjson::Value obj(rapidjson::kObjectType);
+        obj.SetObject();
+        obj.AddMember("name", rapidjson::StringRef(joint->GetName()), allocator);
+        obj.AddMember("frame position", true, allocator);
+        obj.AddMember("frame orientation", true, allocator);
+        obj.AddMember("reaction force", true, allocator);
+        obj.AddMember("reaction torque", true, allocator);
+        obj.AddMember("constraint violation", true, allocator);
+        jsonArray.PushBack(obj, allocator);
+    }
+    jsonDocument.AddMember("joints", jsonArray, allocator);
 }
 
-rapidjson::Value ChPart::LinSpringOutputChannels(std::shared_ptr<ChLinkSpringCB> spring,
-                                                 rapidjson::Document::AllocatorType& allocator) {
-    rapidjson::Value obj(rapidjson::kObjectType);
-    obj.SetObject();
-    obj.AddMember("name", rapidjson::StringRef(spring->GetName()), allocator);
-    obj.AddMember("length", true, allocator);
-    obj.AddMember("force", true, allocator);
+void ChPart::ExportMarkerOutputChannels(rapidjson::Document& jsonDocument,
+                                        std::vector<std::shared_ptr<ChMarker>> markers) {
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
 
-    return obj;
+    rapidjson::Value jsonArray(rapidjson::kArrayType);
+    for (auto marker : markers) {
+        rapidjson::Value obj(rapidjson::kObjectType);
+        obj.SetObject();
+        obj.AddMember("name", rapidjson::StringRef(marker->GetName()), allocator);
+        obj.AddMember("body name", rapidjson::StringRef(marker->GetBody()->GetName()), allocator);
+        obj.AddMember("frame position", true, allocator);
+        obj.AddMember("frame orientation", true, allocator);
+        jsonArray.PushBack(obj, allocator);
+    }
+    jsonDocument.AddMember("markers", jsonArray, allocator);
 }
 
-rapidjson::Value ChPart::RotSpringOutputChannels(std::shared_ptr<ChLinkRotSpringCB> spring,
-                                                 rapidjson::Document::AllocatorType& allocator) {
-    rapidjson::Value obj(rapidjson::kObjectType);
-    obj.SetObject();
-    obj.AddMember("name", rapidjson::StringRef(spring->GetName()), allocator);
-    obj.AddMember("angle", true, allocator);
-    obj.AddMember("torque", true, allocator);
+void ChPart::ExportLinSpringOutputChannels(rapidjson::Document& jsonDocument,
+                                           std::vector<std::shared_ptr<ChLinkSpringCB>> springs) {
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
 
-    return obj;
+    rapidjson::Value jsonArray(rapidjson::kArrayType);
+    for (auto spring : springs) {
+        rapidjson::Value obj(rapidjson::kObjectType);
+        obj.SetObject();
+        obj.AddMember("name", rapidjson::StringRef(spring->GetName()), allocator);
+        obj.AddMember("length", true, allocator);
+        obj.AddMember("force", true, allocator);
+        jsonArray.PushBack(obj, allocator);
+    }
+    jsonDocument.AddMember("linear spring-dampers", jsonArray, allocator);
 }
 
-rapidjson::Value ChPart::MarkerOutputChannels(std::shared_ptr<ChMarker> marker,
-    rapidjson::Document::AllocatorType& allocator) {
-    rapidjson::Value obj(rapidjson::kObjectType);
-    obj.SetObject();
-    obj.AddMember("name", rapidjson::StringRef(marker->GetName()), allocator);
-    obj.AddMember("body name", rapidjson::StringRef(marker->GetBody()->GetName()), allocator);
-    obj.AddMember("frame position", true, allocator);
-    obj.AddMember("frame orientation", true, allocator);
+void ChPart::ExportRotSpringOutputChannels(rapidjson::Document& jsonDocument,
+                                           std::vector<std::shared_ptr<ChLinkRotSpringCB>> springs) {
+    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
 
-    return obj;
+    rapidjson::Value jsonArray(rapidjson::kArrayType);
+    for (auto spring : springs) {
+        rapidjson::Value obj(rapidjson::kObjectType);
+        obj.SetObject();
+        obj.AddMember("name", rapidjson::StringRef(spring->GetName()), allocator);
+        obj.AddMember("angle", true, allocator);
+        obj.AddMember("torque", true, allocator);
+        jsonArray.PushBack(obj, allocator);
+    }
+    jsonDocument.AddMember("rotational spring-dampers", jsonArray, allocator);
 }
 
 }  // end namespace vehicle

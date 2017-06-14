@@ -218,37 +218,37 @@ std::string ChWheeledVehicle::GenerateOutputChannelList() const {
     }
 
     rapidjson::Value suspArray(rapidjson::kArrayType);
-    for (size_t i = 0; i < m_suspensions.size(); i++) {
+    for (auto suspension : m_suspensions) {
         rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
         jsonSubDocument.SetObject();
-        m_suspensions[i]->ExportOutputChannels(jsonSubDocument);
+        suspension->ExportOutputChannels(jsonSubDocument);
         suspArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
     }
     jsonDocument.AddMember("suspension", suspArray, jsonDocument.GetAllocator());
 
     rapidjson::Value sterringArray(rapidjson::kArrayType);
-    for (size_t i = 0; i < m_steerings.size(); i++) {
+    for (auto steering : m_steerings) {
         rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
         jsonSubDocument.SetObject();
-        m_steerings[i]->ExportOutputChannels(jsonSubDocument);
+        steering->ExportOutputChannels(jsonSubDocument);
         sterringArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
     }
     jsonDocument.AddMember("steering", sterringArray, jsonDocument.GetAllocator());
 
     rapidjson::Value brakeArray(rapidjson::kArrayType);
-    for (size_t i = 0; i < m_brakes.size(); i++) {
+    for (auto brake : m_brakes) {
         rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
         jsonSubDocument.SetObject();
-        m_brakes[i]->ExportOutputChannels(jsonSubDocument);
+        brake->ExportOutputChannels(jsonSubDocument);
         brakeArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
     }
     jsonDocument.AddMember("brake", brakeArray, jsonDocument.GetAllocator());
 
     rapidjson::Value arArray(rapidjson::kArrayType);
-    for (size_t i = 0; i < m_antirollbars.size(); i++) {
+    for (auto antirollbar : m_antirollbars) {
         rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
         jsonSubDocument.SetObject();
-        m_antirollbars[i]->ExportOutputChannels(jsonSubDocument);
+        antirollbar->ExportOutputChannels(jsonSubDocument);
         arArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
     }
     jsonDocument.AddMember("anti-roll bar", arArray, jsonDocument.GetAllocator());

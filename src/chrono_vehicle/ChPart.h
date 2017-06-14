@@ -120,31 +120,37 @@ class CH_VEHICLE_API ChPart {
         const ChMatrix33<>& body_rot      ///< body absolute orientation matrix
         );
 
-    /// Export this part's available output channels to the specified JSON object.
-    /// The base class implementation only includes the part name.  Derived classes
-    /// should override this function and first invoke the base class implementation.
+    /// Export this subsystem's available output channels to the specified JSON object.
+    /// Derived classes should override this function and first invoke the base class implementation,
+    /// followed by calls to the various static Export***OutputChannels functions, as appropriate.
     virtual void ExportOutputChannels(rapidjson::Document& jsonDocument) const;
 
   protected:
-    static rapidjson::Value BodyOutputChannels(std::shared_ptr<ChBody> body,
-                                               rapidjson::Document::AllocatorType& allocator);
+    /// Export body-specific JSON information.
+    static void ExportBodyOutputChannels(rapidjson::Document& jsonDocument,
+                                         std::vector<std::shared_ptr<ChBody>> bodies);
 
-    static rapidjson::Value ShaftOutputChannels(std::shared_ptr<ChShaft> shaft,
-                                                rapidjson::Document::AllocatorType& allocator);
+    /// Export shaft-specific JSON information.
+    static void ExportShaftOutputChannels(rapidjson::Document& jsonDocument,
+                                          std::vector<std::shared_ptr<ChShaft>> shafts);
 
-    static rapidjson::Value JointOutputChannels(std::shared_ptr<ChLink> link,
-                                                rapidjson::Document::AllocatorType& allocator);
+    /// Export joint-specific JSON information.
+    static void ExportJointOutputChannels(rapidjson::Document& jsonDocument,
+                                          std::vector<std::shared_ptr<ChLink>> joints);
 
-    static rapidjson::Value MarkerOutputChannels(std::shared_ptr<ChMarker> marker,
-                                                 rapidjson::Document::AllocatorType& allocator);
+    /// Export marker-specific JSON information.
+    static void ExportMarkerOutputChannels(rapidjson::Document& jsonDocument,
+                                           std::vector<std::shared_ptr<ChMarker>> markers);
 
-    static rapidjson::Value LinSpringOutputChannels(std::shared_ptr<ChLinkSpringCB> spring,
-                                                    rapidjson::Document::AllocatorType& allocator);
+    /// Export linear spring-specific JSON information.
+    static void ExportLinSpringOutputChannels(rapidjson::Document& jsonDocument,
+                                              std::vector<std::shared_ptr<ChLinkSpringCB>> springs);
 
-    static rapidjson::Value RotSpringOutputChannels(std::shared_ptr<ChLinkRotSpringCB> spring,
-                                                    rapidjson::Document::AllocatorType& allocator);
+    /// Export rotational spring-specific JSON information.
+    static void ExportRotSpringOutputChannels(rapidjson::Document& jsonDocument,
+                                              std::vector<std::shared_ptr<ChLinkRotSpringCB>> springs);
 
-    std::string m_name;
+    std::string m_name;  ///< subsystem name
 
     float m_friction;       ///< contact coefficient of friction
     float m_restitution;    ///< contact coefficient of restitution

@@ -262,18 +262,16 @@ void ChPitmanArm::LogConstraintViolations() {
 void ChPitmanArm::ExportOutputChannels(rapidjson::Document& jsonDocument) const {
     ChPart::ExportOutputChannels(jsonDocument);
 
-    rapidjson::Document::AllocatorType& allocator = jsonDocument.GetAllocator();
+    std::vector<std::shared_ptr<ChBody>> bodies;
+    bodies.push_back(m_link);
+    bodies.push_back(m_arm);
+    ChPart::ExportBodyOutputChannels(jsonDocument, bodies);
 
-    rapidjson::Value bodyArray(rapidjson::kArrayType);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_link, allocator), allocator);
-    bodyArray.PushBack(ChPart::BodyOutputChannels(m_arm, allocator), allocator);
-    jsonDocument.AddMember("bodies", bodyArray, allocator);
-
-    rapidjson::Value jointArray(rapidjson::kArrayType);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_revolute, allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_revsph, allocator), allocator);
-    jointArray.PushBack(ChPart::JointOutputChannels(m_universal, allocator), allocator);
-    jsonDocument.AddMember("joints", jointArray, allocator);
+    std::vector<std::shared_ptr<ChLink>> joints;
+    joints.push_back(m_revolute);
+    joints.push_back(m_revsph);
+    joints.push_back(m_universal);
+    ChPart::ExportJointOutputChannels(jsonDocument, joints);
 }
 
 }  // end namespace vehicle
