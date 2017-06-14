@@ -21,6 +21,12 @@
 
 #include <string>
 
+#include "chrono/physics/ChBody.h"
+#include "chrono/physics/ChShaft.h"
+#include "chrono/physics/ChLink.h"
+#include "chrono/physics/ChLinkSpringCB.h"
+#include "chrono/physics/ChLinkRotSpringCB.h"
+
 #include "chrono_vehicle/ChApiVehicle.h"
 #include "chrono_vehicle/ChSubsysDefs.h"
 
@@ -123,11 +129,20 @@ class CH_VEHICLE_API ChPart {
     static rapidjson::Value BodyOutputChannels(std::shared_ptr<ChBody> body,
                                                rapidjson::Document::AllocatorType& allocator);
 
+    static rapidjson::Value ShaftOutputChannels(std::shared_ptr<ChShaft> shaft,
+                                                rapidjson::Document::AllocatorType& allocator);
+
     static rapidjson::Value JointOutputChannels(std::shared_ptr<ChLink> link,
                                                 rapidjson::Document::AllocatorType& allocator);
 
     static rapidjson::Value MarkerOutputChannels(std::shared_ptr<ChMarker> marker,
                                                  rapidjson::Document::AllocatorType& allocator);
+
+    static rapidjson::Value LinSpringOutputChannels(std::shared_ptr<ChLinkSpringCB> spring,
+                                                    rapidjson::Document::AllocatorType& allocator);
+
+    static rapidjson::Value RotSpringOutputChannels(std::shared_ptr<ChLinkRotSpringCB> spring,
+                                                    rapidjson::Document::AllocatorType& allocator);
 
     std::string m_name;
 

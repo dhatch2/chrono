@@ -105,6 +105,17 @@ rapidjson::Value ChPart::BodyOutputChannels(std::shared_ptr<ChBody> body,
     return obj;
 }
 
+rapidjson::Value ChPart::ShaftOutputChannels(std::shared_ptr<ChShaft> shaft,
+    rapidjson::Document::AllocatorType& allocator) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.SetObject();
+    obj.AddMember("name", rapidjson::StringRef(shaft->GetName()), allocator);
+    obj.AddMember("angular velocity", true, allocator);
+    obj.AddMember("reaction torque", true, allocator);
+
+    return obj;
+}
+
 rapidjson::Value ChPart::JointOutputChannels(std::shared_ptr<ChLink> link,
                                              rapidjson::Document::AllocatorType& allocator) {
     rapidjson::Value obj(rapidjson::kObjectType);
@@ -114,6 +125,28 @@ rapidjson::Value ChPart::JointOutputChannels(std::shared_ptr<ChLink> link,
     obj.AddMember("frame orientation", true, allocator);
     obj.AddMember("reaction force", true, allocator);
     obj.AddMember("reaction torque", true, allocator);
+
+    return obj;
+}
+
+rapidjson::Value ChPart::LinSpringOutputChannels(std::shared_ptr<ChLinkSpringCB> spring,
+                                                 rapidjson::Document::AllocatorType& allocator) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.SetObject();
+    obj.AddMember("name", rapidjson::StringRef(spring->GetName()), allocator);
+    obj.AddMember("length", true, allocator);
+    obj.AddMember("force", true, allocator);
+
+    return obj;
+}
+
+rapidjson::Value ChPart::RotSpringOutputChannels(std::shared_ptr<ChLinkRotSpringCB> spring,
+                                                 rapidjson::Document::AllocatorType& allocator) {
+    rapidjson::Value obj(rapidjson::kObjectType);
+    obj.SetObject();
+    obj.AddMember("name", rapidjson::StringRef(spring->GetName()), allocator);
+    obj.AddMember("angle", true, allocator);
+    obj.AddMember("torque", true, allocator);
 
     return obj;
 }

@@ -487,6 +487,11 @@ void ChDoubleWishbone::ExportOutputChannels(rapidjson::Document& jsonDocument) c
     bodyArray.PushBack(ChPart::BodyOutputChannels(m_LCA[1], allocator), allocator);
     jsonDocument.AddMember("bodies", bodyArray, allocator);
 
+    rapidjson::Value shaftArray(rapidjson::kArrayType);
+    shaftArray.PushBack(ChPart::ShaftOutputChannels(m_axle[0], allocator), allocator);
+    shaftArray.PushBack(ChPart::ShaftOutputChannels(m_axle[1], allocator), allocator);
+    jsonDocument.AddMember("shafts", shaftArray, allocator);
+
     rapidjson::Value jointArray(rapidjson::kArrayType);
     jointArray.PushBack(ChPart::JointOutputChannels(m_revolute[0], allocator), allocator);
     jointArray.PushBack(ChPart::JointOutputChannels(m_revolute[1], allocator), allocator);
@@ -501,6 +506,13 @@ void ChDoubleWishbone::ExportOutputChannels(rapidjson::Document& jsonDocument) c
     jointArray.PushBack(ChPart::JointOutputChannels(m_distTierod[0], allocator), allocator);
     jointArray.PushBack(ChPart::JointOutputChannels(m_distTierod[1], allocator), allocator);
     jsonDocument.AddMember("joints", jointArray, allocator);
+
+    rapidjson::Value linspringArray(rapidjson::kArrayType);
+    linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_spring[0], allocator), allocator);
+    linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_spring[1], allocator), allocator);
+    linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_shock[0], allocator), allocator);
+    linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_shock[1], allocator), allocator);
+    jsonDocument.AddMember("linear spring-damper", linspringArray, allocator);
 }
 
 }  // end namespace vehicle
