@@ -512,7 +512,7 @@ void ChDoubleWishbone::ExportOutputChannels(rapidjson::Document& jsonDocument) c
     linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_spring[1], allocator), allocator);
     linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_shock[0], allocator), allocator);
     linspringArray.PushBack(ChPart::LinSpringOutputChannels(m_shock[1], allocator), allocator);
-    jsonDocument.AddMember("linear spring-damper", linspringArray, allocator);
+    jsonDocument.AddMember("linear spring-dampers", linspringArray, allocator);
 }
 
 }  // end namespace vehicle

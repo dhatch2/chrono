@@ -205,11 +205,15 @@ std::string ChWheeledVehicle::GenerateOutputChannelList() const {
     rapidjson::Document jsonDocument;
     jsonDocument.SetObject();
 
+    std::string template_name = GetTemplateName();
+    jsonDocument.AddMember("name", rapidjson::StringRef(m_name.c_str()), jsonDocument.GetAllocator());
+    jsonDocument.AddMember("template", rapidjson::Value(template_name.c_str(), jsonDocument.GetAllocator()).Move(),
+                           jsonDocument.GetAllocator());
+
     {
         rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
         jsonSubDocument.SetObject();
         m_chassis->ExportOutputChannels(jsonSubDocument);
-        ////jsonSubDocument.AddMember("name", m_chassis->GetName(), jsonDocument.GetAllocator());
         jsonDocument.AddMember("chassis", jsonSubDocument, jsonDocument.GetAllocator());
     }
 
