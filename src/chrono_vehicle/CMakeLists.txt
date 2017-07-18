@@ -133,6 +133,8 @@ set(CV_POVERTRAIN_FILES
     powertrain/ChSimplePowertrain.cpp
     powertrain/ChShaftsPowertrain.h
     powertrain/ChShaftsPowertrain.cpp
+    powertrain/ChSimpleMapPowertrain.h
+    powertrain/ChSimpleMapPowertrain.cpp
 
     powertrain/SimplePowertrain.h
     powertrain/SimplePowertrain.cpp
@@ -146,8 +148,8 @@ set(CV_TERRAIN_FILES
     terrain/FlatTerrain.cpp
     terrain/RigidTerrain.h
     terrain/RigidTerrain.cpp
-    terrain/DeformableTerrain.h
-    terrain/DeformableTerrain.cpp
+    terrain/SCMDeformableTerrain.h
+    terrain/SCMDeformableTerrain.cpp
 )
 
 if(ENABLE_MODULE_FEA)

@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -35,9 +35,6 @@ namespace chrono {
 /// * case CCP: Y_i are friction cones
 
 class ChApi ChIterativeSolver : public ChSolver {
-
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChIterativeSolver)
 
   protected:
     int max_iterations;  ///< maximum allowed iterations
@@ -96,7 +93,7 @@ class ChApi ChIterativeSolver : public ChSolver {
 
     /// Set the sharpness factor.
     /// This factor may be used by SOR-like methods with projection (see Mangasarian LCP method).
-    /// Usualy in the range [0,1]. Default: 1. 
+    /// Usually in the range [0,1]. Default: 1. 
     virtual void SetSharpnessLambda(double mval) {
         if (mval > 0.)
             shlambda = mval;

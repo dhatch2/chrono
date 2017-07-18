@@ -2,14 +2,14 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
 // http://projectchrono.org/license-chrono.txt.
 //
 // =============================================================================
-// Author: Arman Pazouki
+// Author: Arman Pazouki, Milad Rakhsha
 // =============================================================================
 //
 // Base class for changing device arrays in non-cuda files
@@ -134,8 +134,7 @@ class GpuTimer {
 // --------------------------------------------------------------------
 // ChDeviceUtils
 //
-// This utility class encapsulates a operators on device vectors which
-// might be needed in host files
+/// This utility class encapsulates a operators on device vectors which might be needed in host files
 // --------------------------------------------------------------------
 class CH_FSI_API ChDeviceUtils {
   public:

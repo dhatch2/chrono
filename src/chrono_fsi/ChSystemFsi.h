@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -26,10 +26,6 @@
 #include "chrono_fsi/ChFluidDynamics.cuh"
 #include "chrono_fsi/ChFsiDataManager.cuh"
 #include "chrono_fsi/ChFsiInterface.h"
-
-#ifdef CHRONO_OPENGL
-#include "chrono_opengl/ChOpenGLWindow.h"
-#endif
 
 namespace chrono {
 namespace fsi {
@@ -84,10 +80,6 @@ class CH_FSI_API ChSystemFsi : public ChFsiGeneral {
     /// These ChBodies are stored in a std::vector using their shared pointers.
     std::vector<std::shared_ptr<ChBody>>* GetFsiBodiesPtr() { return &fsiBodeisPtr; }
 
-    /// Initialize the graphics openGL interface for visualization.
-    void InitializeChronoGraphics(chrono::ChVector<> CameraLocation = chrono::ChVector<>(1, 0, 0),
-                                  chrono::ChVector<> CameraLookAt = chrono::ChVector<>(0, 0, 0));
-
     /// Finalize the construction of the fsi system.
     /// This function must be called when the fsi system is constructed,
     /// before the simulation starts. This function calls FinalizeData function
@@ -112,9 +104,6 @@ class CH_FSI_API ChSystemFsi : public ChFsiGeneral {
     double mTime;    ///< current real time of the simulation
     bool haveFluid;  ///< boolean to check if the system have fluid or not
 
-#ifdef CHRONO_OPENGL
-    chrono::opengl::ChOpenGLWindow* gl_window;  ///< opengl graphics window if opengl exist
-#endif
 };
 
 /// @} fsi_physics

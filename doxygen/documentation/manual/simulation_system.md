@@ -133,7 +133,7 @@ A primer on tuning these parameters is provided below.
 Time steppers, also known as _time integrators_, are used to advance the simulation. They perform numerical integration; i.e., they advance the state of the system in time.
 
 Technical and theoretical details on time integration are explained in several PDF documents 
-available on the [white papers page](@ref whitepaper_root). For example
+available on the [white papers page](http://projectchrono.org/whitepapers/). For example
 [this PDF](http://projectchrono.org/assets/white_papers/integrator.pdf) explains how 
 implicit integrators are implemented in Chrono.
 
@@ -215,7 +215,7 @@ We recommend using one of the following iterative solvers:
 - ```BARZILAIBORWEIN``` 
     - good convergence
 	- supports DVI (hard contacts, with complementarity)   
-    - similar to ```SOLVER_APGD```, might be more robust when using large mass ratios
+    - similar to ```APGD```, might be more robust when using large mass ratios
 	
 - ```MINRES``` 
     - good convergence
@@ -240,7 +240,7 @@ Advanced settings are not accessible directly from @ref chrono::ChSystem,
 for instance:
 
 ~~~{.cpp}
-if (auto msolver = dynamic_cast<chrono::ChSolverMINRES*>(my_system.GetSolver())) {
+if (auto msolver = std::dynamic_pointer_cast<ChSolverMINRES>(my_system.GetSolver())) {
 	msolver->SetDiagonalPreconditioning(true);
 }
 ~~~
@@ -283,4 +283,4 @@ my_system.SetMinBounceSpeed(0.1);
 # Theory
 
 Additional information regarding the time integration strategies implemented
-in Chrono can be found on the  [whitepapers page](@ref whitepaper_root).
+in Chrono can be found on the  [white papers page](http://projectchrono.org/whitepapers/).

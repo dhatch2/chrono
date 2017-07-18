@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -71,9 +71,6 @@ class ChContactContainer;
 /// Further info at the @ref simulation_system  manual page.
 
 class ChApi ChSystem : public ChAssembly, public ChIntegrableIIorder {
-
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChSystem)
 
   public:
     /// Create a physical system.
@@ -290,13 +287,13 @@ class ChApi ChSystem : public ChAssembly, public ChIntegrableIIorder {
 
     /// Create and return the pointer to a new body.
     /// The returned body is created with a contact model consistent with the type
-    /// of this Chsystem and with the collision system currently associated with this
+    /// of this ChSystem and with the collision system currently associated with this
     /// ChSystem.  Note that the body is *not* attached to this system.
     virtual ChBody* NewBody() = 0;
 
     /// Create and return the pointer to a new body with auxiliary reference frame.
     /// The returned body is created with a contact model consistent with the type
-    /// of this Chsystem and with the collision system currently associated with this
+    /// of this ChSystem and with the collision system currently associated with this
     /// ChSystem.  Note that the body is *not* attached to this system.
     virtual ChBodyAuxRef* NewBodyAuxRef() = 0;
 

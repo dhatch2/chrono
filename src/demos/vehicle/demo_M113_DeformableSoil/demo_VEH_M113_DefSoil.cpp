@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -21,7 +21,7 @@
 
 #include "chrono_vehicle/ChVehicleModelData.h"
 #include "chrono_vehicle/driver/ChIrrGuiDriver.h"
-#include "chrono_vehicle/terrain/DeformableTerrain.h"
+#include "chrono_vehicle/terrain/SCMDeformableTerrain.h"
 #include "chrono_vehicle/tracked_vehicle/utils/ChTrackedVehicleIrrApp.h"
 
 #include "chrono_models/vehicle/m113/M113_SimplePowertrain.h"
@@ -69,7 +69,7 @@ double render_step_size = 1.0 / 50;  // FPS = 50
 ChVector<> trackPoint(-2.0, 0.0, 0.0);
 
 // Output directories
-const std::string out_dir = "../M113_DEF_SOIL";
+const std::string out_dir = GetChronoOutputPath() + "M113_DEF_SOIL";
 const std::string img_dir = out_dir + "/IMG";
 
 // Visualization output
@@ -88,6 +88,8 @@ void AddMovingObstacles(ChSystem* system);
 
 // =============================================================================
 int main(int argc, char* argv[]) {
+    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+
     // Construct the M113 vehicle
     M113_Vehicle vehicle(false, TrackShoeType::SINGLE_PIN, ChMaterialSurface::SMC);
 
@@ -145,7 +147,7 @@ int main(int argc, char* argv[]) {
     ////vehicle.SetContactCollection(true);
 
     // Create the terrain
-    DeformableTerrain terrain(vehicle.GetSystem());
+    SCMDeformableTerrain terrain(vehicle.GetSystem());
     terrain.SetPlane(ChCoordsys<>(VNULL, Q_from_AngX(CH_C_PI_2)));
     terrain.SetSoilParametersSCM(2e7,   // Bekker Kphi
                                  0,     // Bekker Kc
@@ -153,15 +155,15 @@ int main(int argc, char* argv[]) {
                                  0,     // Mohr cohesive limit (Pa)
                                  20,    // Mohr friction limit (degrees)
                                  0.01,  // Janosi shear coefficient (m)
-                                 2e8,   // Elastic stiffness (Pa/m), before plastic yeld
+                                 2e8,   // Elastic stiffness (Pa/m), before plastic yield
                                  3e4    // Damping (Pa s/m), proportional to negative vertical speed (optional)
                                  );
 
     terrain.SetAutomaticRefinement(true);
     terrain.SetAutomaticRefinementResolution(0.04);
 
-    terrain.SetPlotType(vehicle::DeformableTerrain::PLOT_PRESSURE_YELD, 0, 30000.2);
-    ////terrain.SetPlotType(vehicle::DeformableTerrain::PLOT_SINKAGE, 0, 0.15);
+    terrain.SetPlotType(vehicle::SCMDeformableTerrain::PLOT_PRESSURE_YELD, 0, 30000.2);
+    ////terrain.SetPlotType(vehicle::SCMDeformableTerrain::PLOT_SINKAGE, 0, 0.15);
 
     terrain.Initialize(terrainHeight, terrainLength, terrainWidth, divLength, divWidth);
 

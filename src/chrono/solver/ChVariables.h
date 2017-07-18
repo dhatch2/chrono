@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -47,8 +47,6 @@ namespace chrono {
 /// does \e not include any mass submatrix by default
 
 class ChApi ChVariables {
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChVariables)
 
   private:
     ChMatrix<>* qb;  ///< variables (accelerations, speeds, etc. depending on the problem)

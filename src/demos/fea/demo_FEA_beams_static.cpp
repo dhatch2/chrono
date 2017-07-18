@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -15,6 +15,8 @@
 // FEA nonlinear static analysis of 3D beams.
 //
 // =============================================================================
+
+#include "chrono/core/ChFileutils.h"
 
 #include "chrono/physics/ChSystemNSC.h"
 #include "chrono/physics/ChLinkMate.h"
@@ -35,7 +37,12 @@ using namespace chrono::fea;
 using namespace chrono::irrlicht;
 using namespace irr;
 
+// Output directory
+const std::string out_dir = GetChronoOutputPath() + "BEAM_STATICS";
+
 int main(int argc, char* argv[]) {
+    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+
     // Create a Chrono::Engine physical system
     ChSystemNSC my_system;
 
@@ -139,9 +146,9 @@ int main(int argc, char* argv[]) {
     // ==Asset== attach a visualization of the FEM mesh.
     // This will automatically update a triangle mesh (a ChTriangleMeshShape
     // asset that is internally managed) by setting  proper
-    // coordinates and vertex colours as in the FEM elements.
+    // coordinates and vertex colors as in the FEM elements.
     // Such triangle mesh can be rendered by Irrlicht or POVray or whatever
-    // postprocessor that can handle a coloured ChTriangleMeshShape).
+    // postprocessor that can handle a colored ChTriangleMeshShape).
     // Do not forget AddAsset() at the end!
     auto mvisualizebeamA = std::make_shared<ChVisualizationFEAmesh>(*(my_mesh.get()));
     mvisualizebeamA->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_ELEM_BEAM_MY);
@@ -207,7 +214,13 @@ int main(int argc, char* argv[]) {
     application.SetPaused(true);
 
     // Output data
-    chrono::ChStreamOutAsciiFile file_out1("benchmark_CE_princeton_L1.dat");
+    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
+        std::cout << "Error creating directory " << out_dir << std::endl;
+        return 1;
+    }
+
+    std::string filename1 = out_dir + "/princeton_L1.dat";
+    chrono::ChStreamOutAsciiFile file_out1(filename1.c_str());
     for (int i = 0; i < endnodes[0].size(); ++i) {
         double node_y = endnodes[0][i]->GetPos().y() - 0 * y_spacing;
         double node_z = endnodes[0][i]->GetPos().z() - i * z_spacing;
@@ -216,7 +229,9 @@ int main(int argc, char* argv[]) {
         GetLog() << " Node " << i << " DY=" << node_y << " DZ=" << node_z << "  angle=" << node_a << " [rad]\n";
         file_out1 << node_y << " " << node_z << " " << node_a << "\n";
     }
-    chrono::ChStreamOutAsciiFile file_out2("benchmark_CE_princeton_L2.dat");
+
+    std::string filename2 = out_dir + "/princeton_L2.dat";
+    chrono::ChStreamOutAsciiFile file_out2(filename2.c_str());
     for (int i = 0; i < endnodes[1].size(); ++i) {
         double node_y = endnodes[1][i]->GetPos().y() - 1 * y_spacing;
         double node_z = endnodes[1][i]->GetPos().z() - i * z_spacing;
@@ -225,7 +240,9 @@ int main(int argc, char* argv[]) {
         GetLog() << " Node " << i << " DY=" << node_y << " DZ=" << node_z << "  angle=" << node_a << " [rad]\n";
         file_out2 << node_y << " " << node_z << " " << node_a << "\n";
     }
-    chrono::ChStreamOutAsciiFile file_out3("benchmark_CE_princeton_L3.dat");
+
+    std::string filename3 = out_dir + "/princeton_L3.dat";
+    chrono::ChStreamOutAsciiFile file_out3(filename3.c_str());
     for (int i = 0; i < endnodes[2].size(); ++i) {
         double node_y = endnodes[2][i]->GetPos().y() - 2 * y_spacing;
         double node_z = endnodes[2][i]->GetPos().z() - i * z_spacing;

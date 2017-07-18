@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -31,8 +31,6 @@ namespace chrono {
 /// Additional information can be found in the @ref rigid_bodies manual page.
 
 class ChApi ChBodyAuxRef : public ChBody {
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChBodyAuxRef)
 
   private:
     ChFrameMoving<> auxref_to_cog;  ///< auxiliary REF location, relative to COG

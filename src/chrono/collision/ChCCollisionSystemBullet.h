@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -29,9 +29,6 @@ namespace collision {
 ///
 
 class ChApi ChCollisionSystemBullet : public ChCollisionSystem {
-
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChCollisionSystemBullet)
 
   public:
     ChCollisionSystemBullet(unsigned int max_objects = 16000, double scene_size = 500);

@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -44,9 +44,6 @@ class ChSystem;
 /// Further info at the @ref rigid_bodies  manual page.
 
 class ChApi ChBody : public ChPhysicsItem, public ChBodyFrame, public ChContactable_1vars<6>, public ChLoadableUVW {
-    
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChBody)
 
   protected:
     std::shared_ptr<collision::ChCollisionModel> collision_model;  ///< pointer to the collision model

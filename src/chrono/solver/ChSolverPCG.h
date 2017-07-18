@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -24,9 +24,6 @@ namespace chrono {
 /// passed to the solver.
 
 class ChApi ChSolverPCG : public ChIterativeSolver {
-
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChSolverPCG)
 
   public:
     ChSolverPCG(int mmax_iters = 50,       ///< max.number of iterations

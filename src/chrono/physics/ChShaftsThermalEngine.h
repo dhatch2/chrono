@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -26,9 +26,6 @@ namespace chrono {
 /// is the motor block, that receives the negative torque.
 
 class ChApi ChShaftsThermalEngine : public ChShaftsTorqueBase {
-
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChShaftsThermalEngine)
 
   private:
     std::shared_ptr<ChFunction> Tw;  ///< torque as function of angular vel.

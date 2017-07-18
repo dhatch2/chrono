@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -96,7 +96,6 @@ CH_CLASS_VERSION(ChFseqNode, 0)
 /// laws can be created by sequencing many basic ChFunctions.
 
 class ChApi ChFunction_Sequence : public ChFunction {
-    CH_FACTORY_TAG(ChFunction_Sequence)
 
   private:
     std::list<ChFseqNode> functions;  ///< the list of sub functions

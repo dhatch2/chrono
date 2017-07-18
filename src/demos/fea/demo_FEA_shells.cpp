@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -17,6 +17,8 @@
 // =============================================================================
 
 #include <vector>
+
+#include "chrono/core/ChFileutils.h"
 
 #include "chrono/physics/ChBodyEasy.h"
 #include "chrono/physics/ChLinkMate.h"
@@ -44,7 +46,18 @@ using namespace chrono::irrlicht;
 using namespace chrono::postprocess;
 using namespace irr;
 
+// Output directory
+const std::string out_dir = GetChronoOutputPath() + "FEA_SHELLS";
+
 int main(int argc, char* argv[]) {
+    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+
+    // Create (if needed) output directory
+    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
+        std::cout << "Error creating directory " << out_dir << std::endl;
+        return 1;
+    }
+
     // Create a Chrono::Engine physical system
     ChSystemNSC my_system;
 
@@ -403,9 +416,9 @@ int main(int argc, char* argv[]) {
     // ==Asset== attach a visualization of the FEM mesh.
     // This will automatically update a triangle mesh (a ChTriangleMeshShape
     // asset that is internally managed) by setting  proper
-    // coordinates and vertex colours as in the FEM elements.
+    // coordinates and vertex colors as in the FEM elements.
     // Such triangle mesh can be rendered by Irrlicht or POVray or whatever
-    // postprocessor that can handle a coloured ChTriangleMeshShape).
+    // postprocessor that can handle a colored ChTriangleMeshShape).
     // Do not forget AddAsset() at the end!
 
     auto mvisualizeshellA = std::make_shared<ChVisualizationFEAmesh>(*(my_mesh.get()));
@@ -516,7 +529,8 @@ int main(int argc, char* argv[]) {
 
     // Outputs results in a GNUPLOT plot:
 
-    ChGnuPlot mplot("__shell_benchmark.gpl");
+    std::string gplfilename = out_dir + "/shell_benchmark.gpl";
+    ChGnuPlot mplot(gplfilename.c_str());
     mplot.SetGrid(false, 1, ChColor(0.8f, 0.8f, 0.8f));
     mplot.SetLabelX("Torque T/T0");
     mplot.SetLabelY("Tip displacement [m]");

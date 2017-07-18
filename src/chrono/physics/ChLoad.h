@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -56,9 +56,6 @@ class ChLoadJacobians {
 /// matrix of the load) that can be used in implicit integrators, statics, etc.
 
 class ChApi ChLoadBase {
-
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChLoadBase)
 
 protected:
     ChLoadJacobians* jacobians;

@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -26,8 +26,8 @@ namespace fea {
 /// @addtogroup fea_elements
 /// @{
 
-/// Tetahedron FEA element with 10 nodes.
-/// This is a quadratic element for displacementes; stress and strain
+/// Tetrahedron FEA element with 10 nodes.
+/// This is a quadratic element for displacements; stress and strain
 /// are interpolated depending on Gauss points.
 class ChApiFea ChElementTetra_10 : public ChElementTetrahedron, public ChLoadableUVW {
   protected:

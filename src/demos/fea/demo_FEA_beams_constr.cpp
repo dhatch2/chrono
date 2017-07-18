@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -15,6 +15,8 @@
 // FEA for 3D beams and constraints
 //
 // =============================================================================
+
+#include "chrono/core/ChFileutils.h"
 
 #include "chrono/physics/ChSystemNSC.h"
 #include "chrono/physics/ChLinkMate.h"
@@ -35,7 +37,12 @@ using namespace chrono::fea;
 using namespace chrono::irrlicht;
 using namespace irr;
 
+// Output directory
+const std::string out_dir = GetChronoOutputPath() + "BEAM_BUCKLING";
+
 int main(int argc, char* argv[]) {
+    GetLog() << "Copyright (c) 2017 projectchrono.org\nChrono version: " << CHRONO_VERSION << "\n\n";
+
     // Create a Chrono::Engine physical system
     ChSystemNSC my_system;
 
@@ -221,9 +228,9 @@ int main(int argc, char* argv[]) {
     // ==Asset== attach a visualization of the FEM mesh.
     // This will automatically update a triangle mesh (a ChTriangleMeshShape
     // asset that is internally managed) by setting  proper
-    // coordinates and vertex colours as in the FEM elements.
+    // coordinates and vertex colors as in the FEM elements.
     // Such triangle mesh can be rendered by Irrlicht or POVray or whatever
-    // postprocessor that can handle a coloured ChTriangleMeshShape).
+    // postprocessor that can handle a colored ChTriangleMeshShape).
     // Do not forget AddAsset() at the end!
     auto mvisualizebeamA = std::make_shared<ChVisualizationFEAmesh>(*(my_mesh.get()));
     mvisualizebeamA->SetFEMdataType(ChVisualizationFEAmesh::E_PLOT_ELEM_BEAM_MX);
@@ -293,7 +300,13 @@ int main(int argc, char* argv[]) {
     }
 
     // Output data
-    chrono::ChStreamOutAsciiFile file_out1("benchmark_CE_buckling_mid.dat");
+    if (ChFileutils::MakeDirectory(out_dir.c_str()) < 0) {
+        std::cout << "Error creating directory " << out_dir << std::endl;
+        return 1;
+    }
+
+    std::string filename = out_dir + "/buckling_mid.dat";
+    chrono::ChStreamOutAsciiFile file_out1(filename.c_str());
 
     while (application.GetDevice()->run()) {
         // builder.GetLastBeamNodes().back()->SetTorque(ChVector<>(0, 0, 0.1 * application.GetSystem()->GetChTime()));

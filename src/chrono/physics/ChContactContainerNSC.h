@@ -2,7 +2,7 @@
 // PROJECT CHRONO - http://projectchrono.org
 //
 // Copyright (c) 2014 projectchrono.org
-// All right reserved.
+// All rights reserved.
 //
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file at the top level of the distribution and at
@@ -31,8 +31,6 @@ namespace chrono {
 /// with 6 reactions, that account also for rolling and spinning resistance), but also
 /// for '6dof vs 6dof' contactables.
 class ChApi ChContactContainerNSC : public ChContactContainer {
-    // Tag needed for class factory in archive (de)serialization:
-    CH_FACTORY_TAG(ChContactContainerNSC)
 
   public:
     typedef ChContactNSC<ChContactable_1vars<6>, ChContactable_1vars<6> > ChContactNSC_6_6;
