@@ -1,0 +1,93 @@
+// =============================================================================
+// PROJECT CHRONO - http://projectchrono.org
+//
+// Copyright (c) 2014 projectchrono.org
+// All right reserved.
+//
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file at the top level of the distribution and at
+// http://projectchrono.org/license-chrono.txt.
+//
+// =============================================================================
+// Authors: Dylan Hatch
+// =============================================================================
+//
+//	Specifies the structure of the protobuf messages used in the CAVE project.
+//
+// =============================================================================
+
+syntax = "proto2";
+
+package ChronoMessages;
+
+message MVector {
+	required double x = 1;
+	required double y = 2;
+	required double z = 3;
+}
+
+message MQuaternion {
+	required double e0 = 1;
+	required double e1 = 2;
+	required double e2 = 3;
+	required double e3 = 4;
+}
+
+//message MBody {
+//	required MVector position = 1;
+//	required MQuaternion orientation = 2;
+//	enum shape {
+//		BOX = 0;
+//		CYLINDER = 1;
+//		MESH = 2;
+//	}
+//	required shape bodyShape = 3;
+//}
+
+//message WorldMessage {
+//	required int32 timestamp = 1;
+//	required int32 connectionNumber = 2;
+//	required int32 idNumber = 3;
+//	repeated MBody bodies = 4;
+//}
+
+message MWheel {
+	required MVector position = 1;
+	required MQuaternion orientation = 2;
+}
+
+message VehicleMessage {
+	required int32 timestamp = 1;
+	required int32 connectionNumber = 2;
+	required int32 idNumber = 3;
+	required double chTime = 4;
+	required double speed = 5;
+
+	required MVector ChassisCOM = 6;
+	required MVector FrontRightWheelCOM = 7;
+	required MVector FrontLeftWheelCOM = 8;
+	required MVector BackRightWheelCOM = 9;
+	required MVector BackLeftWheelCOM = 10;
+
+	required MQuaternion ChassisRot = 11;
+	required MQuaternion FrontRightWheelRot = 12;
+	required MQuaternion FrontLeftWheelRot = 13;
+	required MQuaternion BackRightWheelRot = 14;
+	required MQuaternion BackLeftWheelRot = 15;
+
+//	repeated MWheel wheels = 8;
+}
+
+message DSRCMessage {
+	required int32 timestamp = 1;
+	required double chTime = 2;
+	required int32 idNumber = 3;
+	required MVector vehiclePos = 4;
+	required bytes buffer = 5;
+}
+
+message MessagePacket {
+	required int32 connectionNumber = 1;
+	repeated VehicleMessage vehicleMessages = 2;
+	repeated DSRCMessage DSRCMessages = 3;
+}

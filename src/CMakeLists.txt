@@ -105,7 +105,7 @@ if(ENABLE_OPENMP)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CH_CXX_FLAGS "${CH_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
   set(CH_C_FLAGS "${CH_C_FLAGS} ${OpenMP_C_FLAGS}")
-  
+
 else()
 	# As an alternative, if TBB is located the Parallel module will use it for all thrust calls
 	find_package("TBB")
@@ -129,7 +129,7 @@ if(SSE_FOUND)
 else()
   message("  No SSE support")
 endif()
-  
+
 # Figure out AVX level support
 message(STATUS "Searching for AVX...")
 find_package(AVX)
@@ -172,7 +172,7 @@ if(FMA_FOUND)
 	set(CHRONO_HAS_FMA "#define CHRONO_HAS_FMA")
 else()
   message(STATUS "  No FMA support")
-endif()  
+endif()
 
 # Pass -mfma flag to configuration file if fma is found
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -259,7 +259,7 @@ include_directories(${PROJECT_BINARY_DIR})
 # Propagates the CMake build to other directories
 #------------------------------------------------------------
 
-# Add directory for main ChronoEngine library 
+# Add directory for main ChronoEngine library
 add_subdirectory(chrono)
 
 # Let all modules have access to the headers of the main library
@@ -280,6 +280,7 @@ add_subdirectory(chrono_opengl)
 #add_subdirectory(chrono_ogre)
 add_subdirectory(chrono_vehicle)
 add_subdirectory(chrono_fsi)
+add_subdirectory(chrono_networking)
 
 # Add directories for model libraries
 add_subdirectory(chrono_models)
@@ -388,6 +389,12 @@ else()
   set(CHRONO_FSI "#undef CHRONO_FSI")
 endif()
 
+if(ENABLE_MODULE_NETWORKING)
+  set(CHRONO_NETWORKING "#define CHRONO_NETWORKING")
+else()
+  set(CHRONO_NETWORKING "#undef CHRONO_NETWORKING")
+endif()
+
 if(ENABLE_OPENMP)
   set(CHRONO_OPENMP_ENABLED "#define CHRONO_OPENMP_ENABLED")
 else()
@@ -408,7 +415,7 @@ install(FILES "${PROJECT_BINARY_DIR}/chrono/ChConfig.h"
         DESTINATION include/chrono)
 
 #-----------------------------------------------------------------------------
-# Generate and install the versioning header file 
+# Generate and install the versioning header file
 #-----------------------------------------------------------------------------
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/chrono/ChVersion.h.in"
