@@ -38,7 +38,7 @@ endif()
 
 add_custom_command(
     OUTPUT protobuf/ChronoMessages.pb.cc protobuf/ChronoMessages.pb.h
-    COMMAND ${PROTOBUF_PROTOC_EXECUTABLE} --cpp_out=. protobuf/ChronoMessages.proto
+    COMMAND ${PROTOBUF_PROTOC_EXECUTABLE} --cpp_out=${CMAKE_CURRENT_BINARY_DIR} protobuf/ChronoMessages.proto --cpp_out=.
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
@@ -54,7 +54,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ChConfigNetworking.h.in
 install(FILES "${PROJECT_BINARY_DIR}/chrono_networking/ChConfigNetworking.h"
         DESTINATION include/chrono_networking)
 
-# ----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Collect all additional include directories necessary for the Networking module
 # ------------------------------------------------------------------------------
 
@@ -69,6 +69,8 @@ SET(CH_NETWORKING_INCLUDES
 )
 
 include_directories(${CH_NETWORKING_INCLUDES})
+
+SET(CH_PARALLEL_INCLUDES "${CH_NETWORKING_INCLUDES}" PARENT_SCOPE)
 
 # List the files in the ChronoEngine_networking library
 # ----------------------------------------------------------------------------
@@ -121,12 +123,22 @@ add_library(ChronoEngine_networking SHARED
     ${CN_PROTOBUF_FILES}
 )
 
+add_executable(cave-server
+    ${CN_SERVER_FILES}
+    ${CN_HANDLER_FILES}
+    ${CN_WORLD_FILES}
+    ${CN_PROTOBUF_FILES}
+)
+
+target_link_libraries(cave-server boost_system pthread protobuf)
+
 set_target_properties(ChronoEngine_vehicle PROPERTIES
                       COMPILE_FLAGS "${CXX_FLAGS}"
                       LINK_FLAGS "${CH_LINKERFLAG_SHARED}"
                       COMPILE_DEFINITIONS "CH_API_COMPILE_NETWORKING")
 
 target_link_libraries(ChronoEngine_networking ${LIBRARIES})
+target_link_libraries(cave-server ${LIBRARIES})
 
 install(TARGETS ChronoEngine_networking
         RUNTIME DESTINATION bin

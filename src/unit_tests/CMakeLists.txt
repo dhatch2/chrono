@@ -9,7 +9,7 @@ SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
 # when building, don't use the install RPATH already
 # (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib64")
 
@@ -56,4 +56,12 @@ IF (ENABLE_MODULE_FEA)
 	if(BUILD_TESTS_FEA)
   		ADD_SUBDIRECTORY(fea)
   	endif()
+ENDIF()
+
+IF(ENABLE_MODULE_NETWORKING)
+    option(BUILD_TESTS_NETWORKING "Build unit tests for Networking module" TRUE)
+    mark_as_advanced(FORCE BUILD_TESTS_NETWORKING)
+    if(BUILD_TESTS_NETWORKING)
+        ADD_SUBDIRECTORY(networking)
+    endif()
 ENDIF()
