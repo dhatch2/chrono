@@ -8,14 +8,17 @@ include_directories(${CH_NETWORKING_INCLUDES})
 # Libraries
 SET(LIBRARIES
     ChronoEngine
+    ChronoModels_vehicle
     ChronoEngine_vehicle
     ChronoEngine_networking
+    boost_system
+    pthread
+    protobuf
 )
 
 SET(TESTS
     network-tests
     server-tests
-    sim-tests
     world-tests
 )
 

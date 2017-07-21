@@ -61,16 +61,17 @@ install(FILES "${PROJECT_BINARY_DIR}/chrono_networking/ChConfigNetworking.h"
 SET(CH_NETWORKING_INCLUDES
     ${Boost_INCLUDE_DIRS}
     ${PROTOBUF_INCLUDE_DIRS}
-    .
-    cave_server
-    cave_server/World
-    network_handler
-    protobuf
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/cave_server
+    ${CMAKE_CURRENT_SOURCE_DIR}/cave_server/World
+    ${CMAKE_CURRENT_SOURCE_DIR}/cave_agent
+    ${CMAKE_CURRENT_SOURCE_DIR}/network_handler
+    ${CMAKE_CURRENT_SOURCE_DIR}/protobuf
 )
 
 include_directories(${CH_NETWORKING_INCLUDES})
 
-SET(CH_PARALLEL_INCLUDES "${CH_NETWORKING_INCLUDES}" PARENT_SCOPE)
+SET(CH_NETWORKING_INCLUDES "${CH_NETWORKING_INCLUDES}" PARENT_SCOPE)
 
 # List the files in the ChronoEngine_networking library
 # ----------------------------------------------------------------------------
@@ -99,6 +100,8 @@ source_group("world" FILES ${CN_WORLD_FILES})
 SET(CN_AGENT_FILES
     cave_agent/MessageConversions.cpp
     cave_agent/MessageConversions.h
+    cave_agent/ServerVehicle.cpp
+    cave_agent/ServerVehicle.h
     cave_agent/WorldObject.cpp
     cave_agent/WorldObject.h
 )
