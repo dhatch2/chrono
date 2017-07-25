@@ -78,6 +78,11 @@ message VehicleMessage {
 //	repeated MWheel wheels = 8;
 }
 
+message PositionUpdate {
+	required int32 idNumber = 1;
+	required MVector position = 2;
+}
+
 message DSRCMessage {
 	required int32 timestamp = 1;
 	required double chTime = 2;

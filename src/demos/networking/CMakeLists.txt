@@ -15,15 +15,23 @@ SET(LIBRARIES
     protobuf
 )
 
+SET(MODEL_FILES
+    ChDSRCDriver.cpp
+    ChDSRCDriver.h
+    ChDSRCSteeringController.cpp
+    ChDSRCSteeringController.h
+)
+
 # ------------------------------------------------------------------------------
 # List of all executables
 # ------------------------------------------------------------------------------
 
 SET(DEMOS
     sim-tests
+    demo_dsrc
 )
 
-INCLUDE_DIRECTORIES( ${CH_IRRLICHTINC} )
+INCLUDE_DIRECTORIES( ${CH_IRRLICHTINC} .)
 
 # ------------------------------------------------------------------------------
 # Add all executables
@@ -34,7 +42,7 @@ MESSAGE(STATUS "Demo programs for NETWORKING module...")
 FOREACH(PROGRAM ${DEMOS})
     MESSAGE(STATUS "...add ${PROGRAM}")
 
-    ADD_EXECUTABLE(${PROGRAM} "${PROGRAM}.cpp")
+    ADD_EXECUTABLE(${PROGRAM} "${PROGRAM}.cpp" ${MODEL_FILES})
     SOURCE_GROUP("" FILES "${PROGRAM}.cpp")
 
     SET_TARGET_PROPERTIES(${PROGRAM} PROPERTIES
