@@ -46,11 +46,11 @@ ServerVehicle::ServerVehicle(ChSystem* system) {
 }
 
 ServerVehicle::~ServerVehicle() {
-  std::cout << "Destroying ServerVehicle" << std::endl;
-  for(std::shared_ptr<ChBody> wheel : m_wheels)
-      m_system->RemoveBody(wheel);
-  m_system->RemoveBody(m_hitbox);
-  m_system->RemoveBody(m_chassis);
+    std::cout << "Destroying ServerVehicle" << std::endl;
+    //for(std::shared_ptr<ChBody> wheel : m_wheels)
+    //    m_system->RemoveBody(wheel);
+    //m_system->RemoveBody(m_hitbox);
+    //m_system->RemoveBody(m_chassis);
 }
 
 ChBody& ServerVehicle::GetChassis() {

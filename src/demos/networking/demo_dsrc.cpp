@@ -309,8 +309,7 @@ int main(int argc, char **argv) {
                         app.AssetUpdateAll();
                         newVehicle->update(*newMessage);
                         std::cout << "New vehicle updated." << std::endl;
-                    }
-                    else otherVehicles[idPair]->update(*newMessage);
+                    } else otherVehicles[idPair]->update(*newMessage);
                     ChronoMessages::PositionUpdate posUp;
                     posUp.set_idnumber(newMessage->connectionnumber());
                     posUp.mutable_position()->set_x(newMessage->chassiscom().x());
