@@ -3,7 +3,7 @@
 namespace chrono {
 namespace vehicle {
 
-ChDSRCSteeringController::ChDSRCSteeringController(ChVector<>& tar) : target(tar) {
+ChDSRCSteeringController::ChDSRCSteeringController(ChVector<> tar) : target(tar) {
 }
 
 ChDSRCSteeringController::~ChDSRCSteeringController(){
@@ -13,7 +13,7 @@ void ChDSRCSteeringController::CalcTargetLocation() {
 	m_target = target;
 }
 
-void ChDSRCSteeringController::SetTarget(ChVector<>& tar) {
+void ChDSRCSteeringController::SetTarget(ChVector<> tar) {
 	target = tar;
 }
 

@@ -15,7 +15,7 @@ ChDSRCDriver::ChDSRCDriver(ChVehicle& veh,
 	m_throttle_threshold(0.2),
 	vehicle(veh),
 	target(tar),
-	m_steeringPID(tar) {
+	m_steeringPID(target) {
     //default behavior; can be overridden later with m_xxxxxPID.SetGains(Kp,Ki,Kd)
 	m_steeringPID.SetGains(0.1, 0.0, 0.02);
 	m_speedPID.SetGains(1.0, 0.2, 0.2);
@@ -40,6 +40,7 @@ void ChDSRCDriver::Update(std::string mess) {
     update.ParseFromString(mess);
     if (update.idnumber() == 0) {
         target.Set(update.position().x(), update.position().y(), update.position().z());
+        m_steeringPID.SetTarget(target);
     }
 }
 
@@ -56,7 +57,13 @@ void ChDSRCDriver::Advance(double step) {
     // TODO: Fix this so that is turns towards the target vehicle
     ChVector<> selfPos = vehicle.GetDriverPos();
 
+    // Set the steering value based on the output from the steering controller.
+    double out_steering = m_steeringPID.Advance(vehicle, step);
+    ChClampValue(out_steering, -1.0, 1.0);
+    m_steering = out_steering;
+
     m_current_distance = (target - selfPos).Length();
+    m_steeringPID.SetLookAheadDistance(m_current_distance);
 
     double out_speed = m_speedPID.Advance(m_vehicle, m_target_speed, m_target_following_time, m_target_min_distance, m_current_distance, step);
     ChClampValue(out_speed, -1.0, 1.0);

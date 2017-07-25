@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    vehicle::SetDataPath("../../data/vehicle/");
+    //vehicle::SetDataPath("../../data/vehicle/");
     std::cout << GetDataPath() << std::endl;
 
     std::cout << "Connecting to network..." << std::endl;

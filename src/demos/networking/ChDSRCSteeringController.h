@@ -7,9 +7,9 @@ namespace vehicle {
 
 class CH_VEHICLE_API ChDSRCSteeringController : public ChSteeringController {
 public:
-	ChDSRCSteeringController(ChVector<>& tar);
+	ChDSRCSteeringController(ChVector<> tar);
 	~ChDSRCSteeringController();
-	void SetTarget(ChVector<>& tar);
+	void SetTarget(ChVector<> tar);
 
 private:
 	ChVector<> target;
