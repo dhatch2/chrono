@@ -45,7 +45,7 @@ public:
     // Updates existing world element, or adds one if new.
     // Returns true (success) if connectionNumber is the correct owner of the
     // element, and if message is of the same type as the original element.
-    bool updateElement(std::shared_ptr<google::protobuf::Message> message, endpointProfile *profile, int idNumber);
+    bool updateElement(std::shared_ptr<const google::protobuf::Message> message, endpointProfile *profile, int idNumber);
 
     // Updates all the elements in the given profile with the message packet.
     // Efficient, as long as the elemnts are sorted correctly in the packet
@@ -53,10 +53,10 @@ public:
 
     // Returns a shared_ptr to the corresponding element. If element does not
     // exist, returns a shared_ptr to NULL.
-    std::shared_ptr<google::protobuf::Message> getElement(int connectionNumber, int idNumber);
+    std::shared_ptr<const google::protobuf::Message> getElement(int connectionNumber, int idNumber);
 
     // Returns a packet containing all world elements
-    std::shared_ptr<ChronoMessages::MessagePacket> generateWorldPacket();
+    std::shared_ptr<const ChronoMessages::MessagePacket> generateWorldPacket();
 
     // Removes and element from the world. Returns true (success) if element
     // exists and connectionNumber is the correct owner.
@@ -86,7 +86,7 @@ private:
     // Maps connection numbers to endpoints and owned element idNumbers
     std::map<int, endpointProfile *> endpoints;
     // Maps connection number-id number pair to elements in the world
-    std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>> elements;
+    std::map<std::pair<int, int>, std::shared_ptr<const google::protobuf::Message>> elements;
 };
 
 class OutOfBoundsException : std::exception {

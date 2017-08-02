@@ -54,6 +54,7 @@ void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueu
         auto messagePair = handler.popMessage();
         boost::asio::ip::udp::endpoint& endpoint = messagePair.first;
         std::shared_ptr<google::protobuf::Message>& message = messagePair.second;
+        //message->CheckInitialized();
 
         auto reflection = message->GetReflection();
         auto descriptor = message->GetDescriptor();
@@ -84,7 +85,9 @@ void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueu
             worldQueue.enqueue([&, message] { world.updateElement(message, profile, idNumber); });
         }
         if (profile != NULL) {
-            handler.pushMessage(endpoint, *world.generateWorldPacket());
+            auto packet = world.generateWorldPacket();
+            //packet->CheckInitialized();
+            handler.pushMessage(endpoint, *packet);
         }
     }
 }

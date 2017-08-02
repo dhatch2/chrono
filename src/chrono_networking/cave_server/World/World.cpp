@@ -24,8 +24,8 @@ struct endpointProfile {
     int connectionNumber;
     int count;
     boost::asio::ip::udp::endpoint endpoint;
-    std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>>::iterator first;
-    std::map<std::pair<int, int>, std::shared_ptr<google::protobuf::Message>>::iterator last;
+    std::map<std::pair<int, int>, std::shared_ptr<const google::protobuf::Message>>::iterator first;
+    std::map<std::pair<int, int>, std::shared_ptr<const google::protobuf::Message>>::iterator last;
 };
 
 World::~World() {
@@ -68,7 +68,7 @@ bool World::registerEndpoint(boost::asio::ip::udp::endpoint& endpoint, int conne
     return true;
 }
 
-bool World::updateElement(std::shared_ptr<google::protobuf::Message> message, endpointProfile *profile, int idNumber) {
+bool World::updateElement(std::shared_ptr<const google::protobuf::Message> message, endpointProfile *profile, int idNumber) {
     auto mess = elements.find(std::make_pair(profile->connectionNumber, idNumber));
     // The update must be of the same type as the original message
     if (mess != elements.end() && mess->second->GetDescriptor()->full_name().compare(message->GetDescriptor()->full_name()) != 0) {
@@ -92,18 +92,18 @@ bool World::updateElement(std::shared_ptr<google::protobuf::Message> message, en
         profile->last = --curr;
         return true;
     }
-    elements[std::make_pair(profile->connectionNumber, idNumber)]->CopyFrom(*message);
+    elements[std::make_pair(profile->connectionNumber, idNumber)] = message;
     return true;
 }
 
-bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<google::protobuf::Message> message) {
+bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr< google::protobuf::Message> message) {
     // TODO: Handle cases of duplicate idNumbers and extra messages after all pre-existing elements have been updated.
     if (message->GetDescriptor()->full_name().compare(MESSAGE_PACKET_TYPE)) return false;
     auto packet = std::static_pointer_cast<ChronoMessages::MessagePacket>(message);
     auto finish = profile->first;
     finish--;
     for (auto curr = profile->last; curr != finish; curr--) {
-        std::shared_ptr<google::protobuf::Message>& message = curr->second;
+        std::shared_ptr<const google::protobuf::Message>& message = curr->second;
         std::string type = message->GetDescriptor()->full_name();
         int idNumber = curr->first.second;
         if (type.compare(VEHICLE_MESSAGE_TYPE) == 0) {
@@ -137,7 +137,7 @@ bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr<go
     return true;
 }
 
-std::shared_ptr<google::protobuf::Message> World::getElement(int connectionNumber, int idNumber) {
+std::shared_ptr<const google::protobuf::Message> World::getElement(int connectionNumber, int idNumber) {
     auto el = elements.find(std::make_pair(connectionNumber, idNumber));
     if (el != elements.end()) {
         return el->second;
@@ -147,7 +147,7 @@ std::shared_ptr<google::protobuf::Message> World::getElement(int connectionNumbe
     }
 }
 
-std::shared_ptr<ChronoMessages::MessagePacket> World::generateWorldPacket() {
+std::shared_ptr<const ChronoMessages::MessagePacket> World::generateWorldPacket() {
     auto packet = std::make_shared<ChronoMessages::MessagePacket>();
     packet->set_connectionnumber(-1);
     // Iterate through every element and add it to the packet

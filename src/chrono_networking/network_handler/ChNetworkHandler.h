@@ -78,7 +78,7 @@ public:
     void beginSend();
 
     // Pushes message to be sent.
-    void pushMessage(google::protobuf::Message& message);
+    void pushMessage(const google::protobuf::Message& message);
 
     // Returns message related to physical simulation.
     std::shared_ptr<google::protobuf::Message> popSimMessage();
@@ -112,7 +112,7 @@ public:
     std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Message>> popMessage();
 
     // Pushes message to queue to be sent.
-    void pushMessage(boost::asio::ip::udp::endpoint& endpoint, google::protobuf::Message& message);
+    void pushMessage(boost::asio::ip::udp::endpoint& endpoint, const google::protobuf::Message& message);
 private:
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> receiveQueue;
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> sendQueue;

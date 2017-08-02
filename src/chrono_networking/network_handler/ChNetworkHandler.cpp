@@ -193,7 +193,7 @@ void ChClientHandler::beginSend() {
     });
 }
 
-void ChClientHandler::pushMessage(google::protobuf::Message& message) {
+void ChClientHandler::pushMessage(const google::protobuf::Message& message) {
     uint8_t messageType;
     // Identify the type using protobuf's introspective functions
     std::string type = message.GetDescriptor()->full_name();
@@ -334,7 +334,7 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<google::protobuf::Mess
     }
 }
 
-void ChServerHandler::pushMessage(boost::asio::ip::udp::endpoint& endpoint, google::protobuf::Message& message) {
+void ChServerHandler::pushMessage(boost::asio::ip::udp::endpoint& endpoint, const google::protobuf::Message& message) {
     // Uses protobuf's introspective functions to determine type and enqueue message
     uint8_t messageType;
     std::string type = message.GetDescriptor()->full_name();
