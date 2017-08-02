@@ -41,10 +41,13 @@ int main(int argc, char **argv) {
 
     std::thread worker(processMessages, std::ref(world), std::ref(worldQueue), std::ref(handler));
 
+    std::thread worker2(processMessages, std::ref(world), std::ref(worldQueue), std::ref(handler));
+
     while (true) {
         worldQueue.dequeue()();
     }
     worker.join();
+    worker2.join();
     return 0;
 }
 
@@ -75,7 +78,7 @@ void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueu
                         } else {
                             world.updateElement(message, profile, idNumber);
                         }
-                        std::cout << "endpoint registered" << std::endl;
+                        std::cout << "Endpoint " << endpoint << " registered" << std::endl;
                     }
                 }
             });
