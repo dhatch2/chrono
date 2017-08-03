@@ -69,30 +69,30 @@ bool World::registerEndpoint(boost::asio::ip::udp::endpoint& endpoint, int conne
 }
 
 bool World::updateElement(std::shared_ptr<const google::protobuf::Message> message, endpointProfile *profile, int idNumber) {
-    // This hint should make this function take constant time for most clients
-    auto hint = profile->last;
-    if (hint != elements.end()) hint++;
-    auto mess = elements.insert(hint, std::make_pair(std::make_pair(profile->connectionNumber, idNumber), message));
-
-    // The element is updated if insert fails
-    if (mess->second != message) {
-        mess->second = message;
+    auto mess = elements.find(std::make_pair(profile->connectionNumber, idNumber));
+    // The update must be of the same type as the original message
+    if (mess != elements.end() && mess->second->GetDescriptor()->full_name().compare(message->GetDescriptor()->full_name()) != 0) {
+        return false;
+        // Else adds the update as a new element if not already found
+    } else if (mess == elements.end()) {
+        auto empPair = elements.insert(std::make_pair(std::make_pair(profile->connectionNumber, idNumber), message));
+        if (!empPair.second) return false;
+        profile->count++;
+        // Moves profile's iterators to re-encompass it's owned elements
+        mess = empPair.first;
+        auto curr = profile->first;
+        while (curr->first.first == profile->connectionNumber) {
+            curr--;
+        }
+        profile->first = ++curr;
+        curr = profile->last;
+        while (curr->first.first == profile->connectionNumber) {
+            curr++;
+        }
+        profile->last = --curr;
+        return true;
     }
-
-    // Updates profile fields
-    profile->count++;
-    if (profile->first == elements.end()) profile->first = mess;
-    if (profile->last == elements.end()) profile->last = mess;
-    auto curr = profile->first;
-    while (curr != elements.begin() && curr->first.first == profile->connectionNumber) {
-        curr--;
-    }
-    profile->first = ++curr;
-    curr = profile->last;
-    while (curr != elements.end() && curr->first.first == profile->connectionNumber) {
-        curr++;
-    }
-    profile->last = --curr;
+    elements[std::make_pair(profile->connectionNumber, idNumber)] = message;
     return true;
 }
 
