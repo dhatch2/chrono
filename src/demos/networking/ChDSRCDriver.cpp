@@ -17,7 +17,7 @@ ChDSRCDriver::ChDSRCDriver(ChVehicle& veh,
 	target(tar),
 	m_steeringPID(target) {
     //default behavior; can be overridden later with m_xxxxxPID.SetGains(Kp,Ki,Kd)
-	m_steeringPID.SetGains(0.1, 0.0, 0.02);
+	m_steeringPID.SetGains(0.05, 0.0, 0.002);
 	m_speedPID.SetGains(1.0, 0.2, 0.2);
 	//init everything to zero
 	SetSteering(0);

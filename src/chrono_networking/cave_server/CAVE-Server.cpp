@@ -26,6 +26,8 @@
 #include "ChNetworkHandler.h"
 #include "World.h"
 
+void handleConnections(World& world, ChSafeQueue<std::function<void()>>& worldQueue, boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount);
+
 void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueue, ChServerHandler& handler);
 
 int main(int argc, char **argv) {
@@ -35,7 +37,11 @@ int main(int argc, char **argv) {
     }
     World world;
     ChSafeQueue<std::function<void()>> worldQueue;
-    ChServerHandler handler(world, worldQueue, std::stoi(std::string(argv[1])));
+    ChServerHandler handler((unsigned short)std::stoi(std::string(argv[1])),
+        [&] (boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount) {
+            handleConnections(world, worldQueue, tcpSocket, connectionCount);
+        }
+    );
     handler.beginListen();
     handler.beginSend();
 
@@ -49,6 +55,21 @@ int main(int argc, char **argv) {
     worker.join();
     worker2.join();
     return 0;
+}
+
+void handleConnections(World& world, ChSafeQueue<std::function<void()>>& worldQueue, boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount){
+    uint8_t requestMessage;
+    tcpSocket.receive(boost::asio::buffer(&requestMessage, sizeof(uint8_t)));
+    if (requestMessage == CONNECTION_REQUEST) {
+        uint8_t acceptMessage = CONNECTION_ACCEPT;
+        tcpSocket.send(boost::asio::buffer(&acceptMessage, sizeof(uint8_t)));
+        tcpSocket.send(boost::asio::buffer((uint32_t *)(&connectionCount), sizeof(uint32_t)));
+        worldQueue.enqueue([&, connectionCount] { world.registerConnectionNumber(connectionCount); });
+        connectionCount++;
+    } else {
+        uint8_t declineMessage = CONNECTION_DECLINE;
+        tcpSocket.send(boost::asio::buffer(&declineMessage, sizeof(uint8_t)));
+    }
 }
 
 void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueue, ChServerHandler& handler) {

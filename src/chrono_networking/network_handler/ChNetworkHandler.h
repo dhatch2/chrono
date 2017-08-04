@@ -31,7 +31,6 @@
 #include "MessageCodes.h"
 #include "ChronoMessages.pb.h"
 #include "ChSafeQueue.h"
-#include "World.h"
 
 #define REFUSED_CONNECTION 0
 #define UNDETERMINED_CONNECTION 1
@@ -99,7 +98,11 @@ private:
 
 class ChServerHandler : public ChNetworkHandler {
 public:
-    ChServerHandler(World& world, ChSafeQueue<std::function<void()>>& worldQueue, unsigned short portNumber);
+    // Normal constructor
+    ChServerHandler(unsigned short portNumber);
+
+    // Caller passes in connect(), which is called for every new TCP connection.
+    ChServerHandler(unsigned short portNumber, std::function<void(boost::asio::ip::tcp::socket&, int&)> con);
     ~ChServerHandler();
 
     // Begins receiving messages.
@@ -114,6 +117,7 @@ public:
     // Pushes message to queue to be sent.
     void pushMessage(boost::asio::ip::udp::endpoint& endpoint, const google::protobuf::Message& message);
 private:
+    std::function<void(boost::asio::ip::tcp::socket&, int&)> connect;
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> receiveQueue;
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> sendQueue;
     std::thread acceptor;

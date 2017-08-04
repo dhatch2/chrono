@@ -223,8 +223,26 @@ std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
     return DSRCUpdateQueue.dequeue();
 }
 
-ChServerHandler::ChServerHandler(World& world, ChSafeQueue<std::function<void()>>& worldQueue, unsigned short portNumber) : ChNetworkHandler(),
-    acceptor([&, this] {
+ChServerHandler::ChServerHandler(unsigned short portNumber) :
+    ChServerHandler(portNumber, [&] (boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount) {
+        // This is the default connect function, and is called for all new clients if another isn't provided to the constructor.
+        uint8_t requestMessage;
+        tcpSocket.receive(boost::asio::buffer(&requestMessage, sizeof(uint8_t)));
+        if (requestMessage == CONNECTION_REQUEST) {
+            uint8_t acceptMessage = CONNECTION_ACCEPT;
+            tcpSocket.send(boost::asio::buffer(&acceptMessage, sizeof(uint8_t)));
+            tcpSocket.send(boost::asio::buffer((uint32_t *)(&connectionCount), sizeof(uint32_t)));
+            connectionCount++;
+        } else {
+            uint8_t declineMessage = CONNECTION_DECLINE;
+            tcpSocket.send(boost::asio::buffer(&declineMessage, sizeof(uint8_t)));
+        }
+    }) {
+}
+
+ChServerHandler::ChServerHandler(unsigned short portNumber,
+    std::function<void(boost::asio::ip::tcp::socket&, int&)> con) : ChNetworkHandler(),
+    connect(con), acceptor([&, this] {
         // This acceptor code is executed on another thread once the constructor has finished
         // Mutex locks and waits for socket to open
         std::unique_lock<std::mutex> lock(socketMutex);
@@ -244,18 +262,7 @@ ChServerHandler::ChServerHandler(World& world, ChSafeQueue<std::function<void()>
             acceptor.accept(tcpSocket, acceptError);
             // TODO: Do something with this accept error thing
             if (acceptError != boost::asio::error::would_block){
-                uint8_t requestMessage;
-                tcpSocket.receive(boost::asio::buffer(&requestMessage, sizeof(uint8_t)));
-                if (requestMessage == CONNECTION_REQUEST) {
-                    uint8_t acceptMessage = CONNECTION_ACCEPT;
-                    tcpSocket.send(boost::asio::buffer(&acceptMessage, sizeof(uint8_t)));
-                    tcpSocket.send(boost::asio::buffer((uint32_t *)(&connectionCount), sizeof(uint32_t)));
-                    worldQueue.enqueue([&world, c=connectionCount] { world.registerConnectionNumber(c); });
-                    connectionCount++;
-                } else {
-                    uint8_t declineMessage = CONNECTION_DECLINE;
-                    tcpSocket.send(boost::asio::buffer(&declineMessage, sizeof(uint8_t)));
-                }
+                connect(tcpSocket, connectionCount);
             }
             tcpSocket.close();
         }

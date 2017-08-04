@@ -12,7 +12,6 @@
 #include "ChronoMessages.pb.h"
 #include "MessageCodes.h"
 #include "MessageConversions.h"
-#include "World.h"
 #include "ChSafeQueue.h"
 
 #include "chrono/core/ChFileutils.h"
@@ -119,7 +118,6 @@ void serializeVehicle(std::ostream& stream, ChronoMessages::VehicleMessage& mess
 }
 
 int main(int argc, char **argv) {
-    World world;
     ChSafeQueue<std::function<void()>> worldQueue;
 
     // Client connection tests //////////////////////////////////////////////////////////
@@ -132,7 +130,6 @@ int main(int argc, char **argv) {
         } else std::cout << "FAILED -- Client connection test 1: " << exp.what() << std::endl;
     }
     boost::asio::io_service ioService;
-
     std::thread client1([&] {
         try {
             ChClientHandler clientHandler("localhost", "8082");
@@ -180,9 +177,8 @@ int main(int argc, char **argv) {
     client2.join();
     tcpSocket2.close();
     acceptor.close();
-
     // Server connection tests ///////////////////////////////////////////////////////////////////
-    ChServerHandler *serverHandler = new ChServerHandler(world, worldQueue, 8082);
+    ChServerHandler *serverHandler = new ChServerHandler(8082);
 
     boost::asio::ip::tcp::socket tcpSocket3(ioService);
     boost::asio::ip::tcp::resolver tcpResolver(ioService);
@@ -194,6 +190,7 @@ int main(int argc, char **argv) {
     uint8_t connectionRequest = CONNECTION_REQUEST;
     tcpSocket3.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
     tcpSocket3.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
+
     if(requestResponse == CONNECTION_ACCEPT) {
         uint32_t connectionNumber;
         tcpSocket3.receive(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
@@ -233,7 +230,7 @@ int main(int argc, char **argv) {
     delete clientHandler;
     delete serverHandler;
 
-    ChServerHandler *serverHandler2 = new ChServerHandler(world, worldQueue, 8082);
+    ChServerHandler *serverHandler2 = new ChServerHandler(8082);
     ChClientHandler *clientHandler2 = new ChClientHandler("localhost", "8082");
 
     if (clientHandler2->connectionNumber() == 0) {
@@ -384,7 +381,7 @@ int main(int argc, char **argv) {
 
     std::thread server([&] {
         std::unique_lock<std::mutex> lock(initMutex);
-        ChServerHandler serverHandler(world, worldQueue, 8082);
+        ChServerHandler serverHandler(8082);
         isReady = true;
         var.notify_one();
         lock.unlock();

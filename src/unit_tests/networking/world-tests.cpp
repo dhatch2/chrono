@@ -131,7 +131,9 @@ int main(int argc, char **argv) {
     world.registerEndpoint(serverEndpoint, 1);
     endpointProfile *profile1 = world.verifyConnection(1, serverEndpoint);
     bool updateOnce = world.updateElement(vehiclePtr, profile1, 0);
-    bool updateTwice = world.updateElement(vehiclePtr, profile1, 0);
+    auto vehiclePtr2 = std::make_shared<ChronoMessages::VehicleMessage>();
+    *vehiclePtr2 = vehicle;
+    bool updateTwice = world.updateElement(vehiclePtr2, profile1, 0);
     if (updateOnce && updateTwice && world.elementCount() == 2) {
         std::cout << "PASSED -- World test 5" << '\n';
     } else std::cout << "FAILED -- World test 5" << '\n';

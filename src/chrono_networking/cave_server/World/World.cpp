@@ -98,7 +98,7 @@ bool World::updateElement(std::shared_ptr<const google::protobuf::Message> messa
 
 bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr< google::protobuf::Message> message) {
     // TODO: Handle cases of duplicate idNumbers and extra messages after all pre-existing elements have been updated.
-    if (message->GetDescriptor()->full_name().compare(MESSAGE_PACKET_TYPE)) return false;
+    if (message->GetDescriptor()->full_name().compare(MESSAGE_PACKET_TYPE) != 0) return false;
     auto packet = std::static_pointer_cast<ChronoMessages::MessagePacket>(message);
     auto finish = profile->first;
     finish--;

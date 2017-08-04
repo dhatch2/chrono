@@ -44,7 +44,7 @@ public:
 
     // Updates existing world element, or adds one if new.
     // Returns true (success) if connectionNumber is the correct owner of the
-    // element, and if message is of the same type as the original element.
+    // element. Updating with the same message twice leads to undefined behavior.
     bool updateElement(std::shared_ptr<const google::protobuf::Message> message, endpointProfile *profile, int idNumber);
 
     // Updates all the elements in the given profile with the message packet.
