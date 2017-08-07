@@ -76,6 +76,8 @@ double debug_step_size = 1.0 / 1;  // FPS = 1
 // POV-Ray output
 bool povray_output = false;
 
+unsigned short portNumber = 8082;
+
 HMMWV_Full generateTestVehicle() {
     HMMWV_Full my_hmmwv; // Test vehicle for messages
 
@@ -178,7 +180,7 @@ int main(int argc, char **argv) {
     tcpSocket2.close();
     acceptor.close();
     // Server connection tests ///////////////////////////////////////////////////////////////////
-    ChServerHandler *serverHandler = new ChServerHandler(8082);
+    ChServerHandler *serverHandler = new ChServerHandler(portNumber);
 
     boost::asio::ip::tcp::socket tcpSocket3(ioService);
     boost::asio::ip::tcp::resolver tcpResolver(ioService);
@@ -230,7 +232,7 @@ int main(int argc, char **argv) {
     delete clientHandler;
     delete serverHandler;
 
-    ChServerHandler *serverHandler2 = new ChServerHandler(8082);
+    ChServerHandler *serverHandler2 = new ChServerHandler(portNumber);
     ChClientHandler *clientHandler2 = new ChClientHandler("localhost", "8082");
 
     if (clientHandler2->connectionNumber() == 0) {
@@ -381,7 +383,7 @@ int main(int argc, char **argv) {
 
     std::thread server([&] {
         std::unique_lock<std::mutex> lock(initMutex);
-        ChServerHandler serverHandler(8082);
+        ChServerHandler serverHandler(portNumber);
         isReady = true;
         var.notify_one();
         lock.unlock();

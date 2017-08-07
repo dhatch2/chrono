@@ -87,7 +87,6 @@ source_group("handler" FILES ${CN_HANDLER_FILES})
 
 SET(CN_SERVER_FILES
     ChSafeQueue.h
-    cave_server/CAVE-Server.cpp
 )
 source_group("server" FILES ${CN_SERVER_FILES})
 
@@ -127,21 +126,30 @@ add_library(ChronoEngine_networking SHARED
 )
 
 add_executable(cave-server
+    cave_server/CAVE-Server.cpp
     ${CN_SERVER_FILES}
     ${CN_HANDLER_FILES}
     ${CN_WORLD_FILES}
     ${CN_PROTOBUF_FILES}
 )
 
-target_link_libraries(cave-server boost_system pthread protobuf)
+add_executable(dsrc-agent
+    cave_agent/DSRC-Agent.cpp
+    ${CN_HANDLER_FILES}
+    ${CN_PROTOBUF_FILES}
+)
 
-set_target_properties(ChronoEngine_vehicle PROPERTIES
+target_link_libraries(cave-server boost_system pthread protobuf)
+target_link_libraries(dsrc-agent boost_system pthread protobuf)
+
+set_target_properties(ChronoEngine_networking PROPERTIES
                       COMPILE_FLAGS "${CXX_FLAGS}"
                       LINK_FLAGS "${CH_LINKERFLAG_SHARED}"
                       COMPILE_DEFINITIONS "CH_API_COMPILE_NETWORKING")
 
 target_link_libraries(ChronoEngine_networking ${LIBRARIES})
 target_link_libraries(cave-server ${LIBRARIES})
+target_link_libraries(dsrc-agent ${LIBRARIES})
 
 install(TARGETS ChronoEngine_networking
         RUNTIME DESTINATION bin

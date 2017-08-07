@@ -64,7 +64,12 @@ protected:
 
 class ChClientHandler : public ChNetworkHandler {
 public:
+    // Normal constructor
     ChClientHandler(std::string hostname, std::string port);
+
+    // Caller passes in connect(), which is called for initial TCP connection.
+    ChClientHandler(std::string hostname, std::string port, std::function<void(boost::asio::ip::tcp::socket&, int&)> con);
+
     ~ChClientHandler();
 
     bool isConnected();
@@ -89,20 +94,22 @@ public:
     std::shared_ptr<ChronoMessages::DSRCMessage> popDSRCMessage();
 
 private:
+    std::function<void(boost::asio::ip::tcp::socket&, int&)> connect;
     ChSafeQueue<std::shared_ptr<boost::asio::streambuf>> sendQueue;
     ChSafeQueue<std::shared_ptr<google::protobuf::Message>> simUpdateQueue;
     ChSafeQueue<std::shared_ptr<ChronoMessages::DSRCMessage>> DSRCUpdateQueue;
     boost::asio::ip::udp::endpoint serverEndpoint;
+    boost::asio::ip::udp::endpoint dsrcEndpoint;
     int m_connectionNumber;
 };
 
 class ChServerHandler : public ChNetworkHandler {
 public:
     // Normal constructor
-    ChServerHandler(unsigned short portNumber);
+    ChServerHandler(unsigned short& portNumber);
 
     // Caller passes in connect(), which is called for every new TCP connection.
-    ChServerHandler(unsigned short portNumber, std::function<void(boost::asio::ip::tcp::socket&, int&)> con);
+    ChServerHandler(unsigned short& portNumber, std::function<void(boost::asio::ip::tcp::socket&, int&)> con);
     ~ChServerHandler();
 
     // Begins receiving messages.
@@ -116,12 +123,17 @@ public:
 
     // Pushes message to queue to be sent.
     void pushMessage(boost::asio::ip::udp::endpoint& endpoint, const google::protobuf::Message& message);
+
+    // Controls whether the handler can accept new connections
+    void setAccepting(bool ac);
+
 private:
     std::function<void(boost::asio::ip::tcp::socket&, int&)> connect;
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> receiveQueue;
     ChSafeQueue<std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>> sendQueue;
     std::thread acceptor;
     int connectionCount;
+    bool accepting;
 };
 
 class ConnectionException : public std::exception {

@@ -85,39 +85,44 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
 }
 
 ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
-    ChNetworkHandler() {
+    ChClientHandler(hostname, port, [&] (boost::asio::ip::tcp::socket& tcpSocket, int& m_connectionNumber) {
+        boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
+        boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
+        uint8_t requestResponse;
+        try {
+            boost::asio::ip::tcp::resolver::iterator endpointIterator = tcpResolver.resolve(tcpQuery);
+            boost::asio::connect(tcpSocket, endpointIterator);
+            uint8_t connectionRequest = CONNECTION_REQUEST;
+            tcpSocket.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
+            tcpSocket.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
+            // Any problems with network connection must throw
+        } catch (std::exception& err) { throw ConnectionException(FAILED_CONNECTION); }
+        // If the connection is refused, the clientHandler cannot be constructed
+        if(requestResponse == CONNECTION_DECLINE) throw ConnectionException(REFUSED_CONNECTION);
+        // After connection is accepted, other information can then be sent
+        if(requestResponse == CONNECTION_ACCEPT) {
+            uint32_t connectionNumber;
+            tcpSocket.receive(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
+            tcpSocket.close();
+            m_connectionNumber = connectionNumber;
+
+            boost::asio::ip::udp::resolver udpResolver(socket.get_io_service());
+            boost::asio::ip::udp::resolver::query udpQuery(boost::asio::ip::udp::v4(), hostname, port);
+            serverEndpoint = *udpResolver.resolve(udpQuery);
+            socket.open(boost::asio::ip::udp::v4());
+            socket.non_blocking(true);
+            initVar.notify_one();
+        } else throw ConnectionException(UNDETERMINED_CONNECTION);
+    }) {
+}
+
+ChClientHandler::ChClientHandler(std::string hostname, std::string port, std::function<void(boost::asio::ip::tcp::socket&, int&)> con) :
+    ChNetworkHandler(), connect(con) {
     // Lock begins -- the udp socket cannot open during the tcp connection process
     std::unique_lock<std::mutex> lock(socketMutex);
     m_connectionNumber = -1;
-    boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
-    boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
-    uint8_t requestResponse;
     boost::asio::ip::tcp::socket tcpSocket(socket.get_io_service());
-    try {
-        boost::asio::ip::tcp::resolver::iterator endpointIterator = tcpResolver.resolve(tcpQuery);
-        boost::asio::connect(tcpSocket, endpointIterator);
-        uint8_t connectionRequest = CONNECTION_REQUEST;
-        tcpSocket.send(boost::asio::buffer(&connectionRequest, sizeof(uint8_t)));
-        tcpSocket.receive(boost::asio::buffer(&requestResponse, sizeof(uint8_t)));
-        // Any problems with network connection must throw
-    } catch (std::exception& err) { throw ConnectionException(FAILED_CONNECTION); }
-    // If the connection is refused, the clientHandler cannot be constructed
-    if(requestResponse == CONNECTION_DECLINE) throw ConnectionException(REFUSED_CONNECTION);
-    // After connection is accepted, other information can then be sent
-    if(requestResponse == CONNECTION_ACCEPT) {
-        uint32_t connectionNumber;
-        tcpSocket.receive(boost::asio::buffer(&connectionNumber, sizeof(uint32_t)));
-        tcpSocket.close();
-        m_connectionNumber = connectionNumber;
-
-        boost::asio::ip::udp::resolver udpResolver(socket.get_io_service());
-        boost::asio::ip::udp::resolver::query udpQuery(boost::asio::ip::udp::v4(), hostname, port);
-        serverEndpoint = *udpResolver.resolve(udpQuery);
-        socket.open(boost::asio::ip::udp::v4());
-        socket.non_blocking(true);
-        // TODO: Complete Handshake over udp.
-        initVar.notify_one();
-    } else throw ConnectionException(UNDETERMINED_CONNECTION);
+    connect(tcpSocket, m_connectionNumber);
 }
 
 ChClientHandler::~ChClientHandler() {
@@ -223,7 +228,7 @@ std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
     return DSRCUpdateQueue.dequeue();
 }
 
-ChServerHandler::ChServerHandler(unsigned short portNumber) :
+ChServerHandler::ChServerHandler(unsigned short& portNumber) :
     ChServerHandler(portNumber, [&] (boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount) {
         // This is the default connect function, and is called for all new clients if another isn't provided to the constructor.
         uint8_t requestMessage;
@@ -240,23 +245,23 @@ ChServerHandler::ChServerHandler(unsigned short portNumber) :
     }) {
 }
 
-ChServerHandler::ChServerHandler(unsigned short portNumber,
+ChServerHandler::ChServerHandler(unsigned short& portNumber,
     std::function<void(boost::asio::ip::tcp::socket&, int&)> con) : ChNetworkHandler(),
-    connect(con), acceptor([&, this] {
+    connect(con), accepting(true), acceptor([&, this] {
         // This acceptor code is executed on another thread once the constructor has finished
         // Mutex locks and waits for socket to open
         std::unique_lock<std::mutex> lock(socketMutex);
         initVar.wait(lock, [&]{ return socket.is_open(); });
         connectionCount = 0;
 
-        boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8082));
+        boost::asio::ip::tcp::acceptor acceptor(socket.get_io_service(), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), portNumber));
         acceptor.non_blocking(true);
 
         // Mutex unlocks
         lock.unlock();
 
         // Listen for new connections, accepting them over tcp
-        while (socket.is_open() && !shutdown) {
+        while (socket.is_open() && !shutdown && accepting) {
             boost::asio::ip::tcp::socket tcpSocket(socket.get_io_service());
             boost::system::error_code acceptError;
             acceptor.accept(tcpSocket, acceptError);
@@ -357,4 +362,8 @@ void ChServerHandler::pushMessage(boost::asio::ip::udp::endpoint& endpoint, cons
     stream.flush();
 
     sendQueue.enqueue(std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>(endpoint, buffer));
+}
+
+void ChServerHandler::setAccepting(bool ac) {
+    accepting = ac;
 }

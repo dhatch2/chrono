@@ -35,9 +35,11 @@ int main(int argc, char **argv) {
         std::cout << "Usage: " << std::string(argv[0]) << " <port number>" << std::endl;
         return 1;
     }
+
+    unsigned short portNumber = (unsigned short)std::stoi(std::string(argv[1]));
     World world;
     ChSafeQueue<std::function<void()>> worldQueue;
-    ChServerHandler handler((unsigned short)std::stoi(std::string(argv[1])),
+    ChServerHandler handler(portNumber,
         [&] (boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount) {
             handleConnections(world, worldQueue, tcpSocket, connectionCount);
         }
