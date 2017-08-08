@@ -20,6 +20,8 @@ SET(MODEL_FILES
     ChDSRCDriver.h
     ChDSRCSteeringController.cpp
     ChDSRCSteeringController.h
+    DSRCNode.cpp
+    DSRCNode.h
 )
 
 # ------------------------------------------------------------------------------

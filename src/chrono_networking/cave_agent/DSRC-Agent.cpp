@@ -31,6 +31,7 @@ int main(int argc, char **argv) {
     serverConnectionHandler.beginSend();
     serverConnectionHandler.beginListen();
     std::cout << "Connected to DSRC Server." << std::endl;
+    std::cout << serverConnectionHandler.connectionNumber() << std::endl;
 }
 
 void handleConnections(ChServerHandler& handler, boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount){
