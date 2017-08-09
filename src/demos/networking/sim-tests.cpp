@@ -3,6 +3,7 @@
 #include "ChronoMessages.pb.h"
 #include "MessageConversions.h"
 #include "ServerVehicle.h"
+#include "DSRCNode.h"
 
 #include "chrono/core/ChFileutils.h"
 #include "chrono/core/ChStream.h"
@@ -91,8 +92,8 @@ bool povray_output = false;
 // TODO: Make a map-structure storing messages and their corresponding world object -- while preserving as much generality as possible.
 
 int main(int argc, char **argv) {
-    if (argc < 3 || argc > 3) {
-        std::cout << "Usage: " << std::string(argv[0]) << " <ServerHostname> <port number>" << std::endl;
+    if (argc < 5 || argc > 5) {
+        std::cout << "Usage: " << std::string(argv[0]) << " <ServerHostname> <port number> <DSRCHostname> <DSRC port number>" << std::endl;
         return 1;
     }
 
@@ -105,6 +106,10 @@ int main(int argc, char **argv) {
     handler.beginListen();
 
     std::cout << "Connected." << std::endl;
+
+    DSRCNode dsrcNode(argv[3], argv[4]);
+    dsrcNode.startReceive();
+    dsrcNode.startSend();
 
     // Create map of vehicles received over the network
     std::map<std::pair<int, int>, std::shared_ptr<ServerVehicle>> otherVehicles;
@@ -310,6 +315,17 @@ int main(int argc, char **argv) {
                     else otherVehicles[idPair]->update(*newMessage);
                 }
             }
+
+            ChronoMessages::DSRCMessage DSRCMess;
+            DSRCMess.set_timestamp(0);
+            DSRCMess.set_chtime(my_hmmwv.GetVehicle().GetChTime());
+            DSRCMess.set_idnumber(handler.connectionNumber());
+            messageFromVector(DSRCMess.mutable_vehiclepos(), my_hmmwv.GetVehicle().GetVehiclePos());
+            ChronoMessages::PositionUpdate mess;
+            messageFromVector(mess.mutable_position(), my_hmmwv.GetVehicle().GetVehiclePos());
+            mess.set_idnumber(handler.connectionNumber());
+            DSRCMess.set_buffer(mess.SerializeAsString());
+            dsrcNode.send(DSRCMess);
 
             /*for (auto it = otherVehicles.begin(); it != otherVehicles.end(); it++) {
                 if (otherVehicles.find(it->first) == otherVehicles.end()) {

@@ -4,6 +4,7 @@
 #include "MessageConversions.h"
 #include "ServerVehicle.h"
 #include "ChDSRCDriver.h"
+#include "DSRCNode.h"
 
 #include "chrono/core/ChFileutils.h"
 #include "chrono/core/ChStream.h"
@@ -92,8 +93,8 @@ bool povray_output = false;
 // TODO: Make a map-structure storing messages and their corresponding world object -- while preserving as much generality as possible.
 
 int main(int argc, char **argv) {
-    if (argc < 3 || argc > 3) {
-        std::cout << "Usage: " << std::string(argv[0]) << " <ServerHostname> <port number>" << std::endl;
+    if (argc < 5 || argc > 5) {
+        std::cout << "Usage: " << std::string(argv[0]) << " <ServerHostname> <port number> <DSRCHostname> <DSRC port number>" << std::endl;
         return 1;
     }
 
@@ -106,6 +107,10 @@ int main(int argc, char **argv) {
     handler.beginListen();
 
     std::cout << "Connected." << std::endl;
+
+    DSRCNode dsrcNode(argv[3], argv[4]);
+    dsrcNode.startReceive();
+    dsrcNode.startSend();
 
     // Create map of vehicles received over the network
     std::map<std::pair<int, int>, std::shared_ptr<ServerVehicle>> otherVehicles;
@@ -310,15 +315,19 @@ int main(int argc, char **argv) {
                         newVehicle->update(*newMessage);
                         std::cout << "New vehicle updated." << std::endl;
                     } else otherVehicles[idPair]->update(*newMessage);
-                    ChronoMessages::PositionUpdate posUp;
+                    /*ChronoMessages::PositionUpdate posUp;
                     posUp.set_idnumber(newMessage->connectionnumber());
                     posUp.mutable_position()->set_x(newMessage->chassiscom().x());
                     posUp.mutable_position()->set_y(newMessage->chassiscom().y());
                     posUp.mutable_position()->set_z(newMessage->chassiscom().z());
                     std::string mess;
                     posUp.SerializeToString(&mess);
-                    driver.Update(mess);
+                    driver.Update(mess);*/
                 }
+            }
+
+            while (dsrcNode.waiting() > 0) {
+                driver.Update(dsrcNode.receive().buffer());
             }
 
             /*for (auto it = otherVehicles.begin(); it != otherVehicles.end(); it++) {
