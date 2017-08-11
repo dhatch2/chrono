@@ -41,6 +41,7 @@ void ChDSRCDriver::Update(std::string mess) {
     if (update.idnumber() == 0) {
         target.Set(update.position().x(), update.position().y(), update.position().z());
         m_steeringPID.SetTarget(target);
+        //std::cout << "(" << target.x() << ", " << target.y() << ", " << target.z() << ")" << std::endl;
     }
 }
 

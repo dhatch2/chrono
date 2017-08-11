@@ -107,9 +107,13 @@ int main(int argc, char **argv) {
 
     std::cout << "Connected." << std::endl;
 
-    DSRCNode dsrcNode(argv[3], argv[4]);
+    ChClientHandler dsrcHandler(argv[3], argv[4]);
+    dsrcHandler.beginSend();
+    dsrcHandler.beginListen();
+
+    /*DSRCNode dsrcNode(argv[3], argv[4]);
     dsrcNode.startReceive();
-    dsrcNode.startSend();
+    dsrcNode.startSend();*/
 
     // Create map of vehicles received over the network
     std::map<std::pair<int, int>, std::shared_ptr<ServerVehicle>> otherVehicles;
@@ -324,8 +328,11 @@ int main(int argc, char **argv) {
             ChronoMessages::PositionUpdate mess;
             messageFromVector(mess.mutable_position(), my_hmmwv.GetVehicle().GetVehiclePos());
             mess.set_idnumber(handler.connectionNumber());
+            //mess.CheckInitialized();
             DSRCMess.set_buffer(mess.SerializeAsString());
-            dsrcNode.send(DSRCMess);
+            //DSRCMess.CheckInitialized();
+            //dsrcNode.send(DSRCMess);
+            dsrcHandler.pushMessage(DSRCMess);
 
             /*for (auto it = otherVehicles.begin(); it != otherVehicles.end(); it++) {
                 if (otherVehicles.find(it->first) == otherVehicles.end()) {

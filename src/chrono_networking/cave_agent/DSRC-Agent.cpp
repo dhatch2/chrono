@@ -10,13 +10,13 @@
 void handleConnections(ChServerHandler& handler, boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount);
 
 int main(int argc, char **argv) {
-    if (argc != 3) {
-        std::cout << "Usage: " << std::string(argv[0]) << " <ServerHostname> <port number>" << std::endl;
+    if (argc != 4) {
+        std::cout << "Usage: " << std::string(argv[0]) << " <ServerHostname> <ServerPortnumber> <AgentPortnumber>" << std::endl;
         return 1;
     }
 
     std::cout << "Connecting to CAVE Agent..." << std::endl;
-    unsigned short portNumber = (unsigned short)std::stoi(std::string(argv[2]));
+    unsigned short portNumber = (unsigned short)std::stoi(std::string(argv[3]));
     ChServerHandler agentConnectionHandler(portNumber,
         [&] (boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount) {
             handleConnections(agentConnectionHandler, tcpSocket, connectionCount);
@@ -32,6 +32,28 @@ int main(int argc, char **argv) {
     serverConnectionHandler.beginListen();
     std::cout << "Connected to DSRC Server." << std::endl;
     std::cout << serverConnectionHandler.connectionNumber() << std::endl;
+
+    auto initPair = agentConnectionHandler.popMessage();
+    boost::asio::ip::udp::endpoint agentEndpoint = initPair.first;
+    serverConnectionHandler.pushMessage(*initPair.second);
+
+    std::thread up([&] {
+        while (true) {
+            auto pair = agentConnectionHandler.popMessage();
+            serverConnectionHandler.pushMessage(*pair.second);
+            //std::cout << "pushed up from " << agentEndpoint << std::endl;
+        }
+    });
+    std::thread down([&] {
+        while (true) {
+            agentConnectionHandler.pushMessage(agentEndpoint, *serverConnectionHandler.popDSRCMessage());
+            //std::cout << "pushed down to " << agentEndpoint << std::endl;
+        }
+    });
+
+    up.join();
+    down.join();
+    return 0;
 }
 
 void handleConnections(ChServerHandler& handler, boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount){

@@ -139,8 +139,15 @@ add_executable(dsrc-agent
     ${CN_PROTOBUF_FILES}
 )
 
+add_executable(dsrc-server
+    cave_server/DSRC-Server.cpp
+    ${CN_HANDLER_FILES}
+    ${CN_PROTOBUF_FILES}
+)
+
 target_link_libraries(cave-server boost_system pthread protobuf)
 target_link_libraries(dsrc-agent boost_system pthread protobuf)
+target_link_libraries(dsrc-server boost_system pthread protobuf)
 
 set_target_properties(ChronoEngine_networking PROPERTIES
                       COMPILE_FLAGS "${CXX_FLAGS}"
@@ -150,6 +157,7 @@ set_target_properties(ChronoEngine_networking PROPERTIES
 target_link_libraries(ChronoEngine_networking ${LIBRARIES})
 target_link_libraries(cave-server ${LIBRARIES})
 target_link_libraries(dsrc-agent ${LIBRARIES})
+target_link_libraries(dsrc-server ${LIBRARIES})
 
 install(TARGETS ChronoEngine_networking
         RUNTIME DESTINATION bin

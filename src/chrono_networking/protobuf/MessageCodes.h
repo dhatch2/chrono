@@ -34,6 +34,8 @@
 #define CONNECTION_ACCEPT 9
 #define CONNECTION_DECLINE 10
 
+#define RESET_REQUEST 11
+
 #define VEHICLE_MESSAGE_TYPE "ChronoMessages.VehicleMessage"
 #define VEHICLE_MESSAGE_SIZE 361
 #define DSRC_MESSAGE_TYPE "ChronoMessages.DSRCMessage"

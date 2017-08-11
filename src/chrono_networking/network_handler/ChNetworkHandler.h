@@ -93,6 +93,8 @@ public:
     // Returns simulated DSRC message.
     std::shared_ptr<ChronoMessages::DSRCMessage> popDSRCMessage();
 
+    int waitingDSRCMessages();
+
 private:
     std::function<void(boost::asio::ip::tcp::socket&, int&)> connect;
     ChSafeQueue<std::shared_ptr<boost::asio::streambuf>> sendQueue;

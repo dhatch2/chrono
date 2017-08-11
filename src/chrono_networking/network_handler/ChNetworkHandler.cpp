@@ -228,6 +228,10 @@ std::shared_ptr<ChronoMessages::DSRCMessage> ChClientHandler::popDSRCMessage() {
     return DSRCUpdateQueue.dequeue();
 }
 
+int ChClientHandler::waitingDSRCMessages() {
+    return DSRCUpdateQueue.size();
+}
+
 ChServerHandler::ChServerHandler(unsigned short& portNumber) :
     ChServerHandler(portNumber, [&] (boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount) {
         // This is the default connect function, and is called for all new clients if another isn't provided to the constructor.
