@@ -142,7 +142,7 @@ class CH_VEHICLE_API ChPac89Tire : public ChTire {
         double A12;
         double A13;
 
-        double B0;
+        double BNaught;
         double B1;
         double B2;
         double B3;

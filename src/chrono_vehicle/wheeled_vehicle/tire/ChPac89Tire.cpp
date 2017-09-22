@@ -193,7 +193,7 @@ void ChPac89Tire::Advance(double step) {
 
     // Longitudinal Force
     {
-        double C = m_PacCoeff.B0;
+        double C = m_PacCoeff.BNaught;
         double D = (m_PacCoeff.B1 * std::pow(Fz, 2) + m_PacCoeff.B2 * Fz);
         double BCD = (m_PacCoeff.B3 * std::pow(Fz, 2) + m_PacCoeff.B4 * Fz) * std::exp(-m_PacCoeff.B5 * Fz);
         double B = BCD / (C * D);

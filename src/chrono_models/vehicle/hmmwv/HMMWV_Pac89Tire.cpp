@@ -67,7 +67,7 @@ void HMMWV_Pac89Tire::SetPac89Params() {
     m_PacCoeff.A12 = 1.21356;
     m_PacCoeff.A13 = 6.26206;
 
-    m_PacCoeff.B0 = 1.67272;
+    m_PacCoeff.BNaught = 1.67272;
     m_PacCoeff.B1 = -9.46;
     m_PacCoeff.B2 = 1490.0;
     m_PacCoeff.B3 = 30.0;
