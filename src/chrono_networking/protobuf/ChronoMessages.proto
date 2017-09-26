@@ -91,6 +91,11 @@ message DSRCMessage {
 	required bytes buffer = 5;
 }
 
+message update {
+	required int64 idNumber = 2;
+	required MVector position = 3;
+}
+
 message MessagePacket {
 	required int32 connectionNumber = 1;
 	repeated VehicleMessage vehicleMessages = 2;
