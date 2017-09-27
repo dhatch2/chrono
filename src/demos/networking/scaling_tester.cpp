@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
 
     // Setup client object and connect to network
     std::cout << "Connecting to network..." << std::endl;
-    ChClientHandler handler(argv[1], argv[2]);
+    ChClientHandler handler(argv[3], argv[1], argv[2]);
     handler.beginSend();
     handler.beginListen();
 
@@ -286,8 +286,8 @@ int main(int argc, char* argv[]) {
     double time = 0;
 
     // Setup position output file
-    std::ofstream positionFile;
-    positionFile.open(outputFilename + "-" + std::to_string(handler.connectionNumber()) + ".txt");
+    //std::ofstream positionFile;
+    //positionFile.open(outputFilename + "-" + std::to_string(handler.connectionNumber()) + ".txt");
 
     /*if (contact_vis) {
         app.SetSymbolscale(1e-4);
@@ -346,7 +346,7 @@ int main(int argc, char* argv[]) {
             auto message = generateVehicleMessageFromWheeledVehicle(&my_hmmwv.GetVehicle(), handler.connectionNumber(), 0);
             handler.pushMessage(message);
 
-            positionFile << message.chassiscom().x() << ", " << message.chassiscom().y() << ", " << message.chtime() << std::endl;
+            //positionFile << message.chassiscom().x() << ", " << message.chassiscom().y() << ", " << message.chtime() << std::endl;
 
             while (handler.waitingMessages() > 0) {
                 auto newMessage = std::static_pointer_cast<ChronoMessages::VehicleMessage>(handler.popSimMessage()); // TODO: Make this crap more general
@@ -375,7 +375,7 @@ int main(int argc, char* argv[]) {
         step_number++;
     }
 
-    positionFile.close();
+    //positionFile.close();
 
     return 0;
 }

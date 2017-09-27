@@ -84,8 +84,8 @@ std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf
     return std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<boost::asio::streambuf>>(endpoint, buffer);
 }
 
-ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
-    ChClientHandler(hostname, port, [&] (boost::asio::ip::tcp::socket& tcpSocket, int& m_connectionNumber) {
+ChClientHandler::ChClientHandler(std::string outname, std::string hostname, std::string port) :
+    ChClientHandler(outname, hostname, port, [&] (boost::asio::ip::tcp::socket& tcpSocket, int& m_connectionNumber) {
         boost::asio::ip::tcp::resolver tcpResolver(socket.get_io_service());
         boost::asio::ip::tcp::resolver::query tcpQuery(hostname, port);
         uint8_t requestResponse;
@@ -116,16 +116,19 @@ ChClientHandler::ChClientHandler(std::string hostname, std::string port) :
     }) {
 }
 
-ChClientHandler::ChClientHandler(std::string hostname, std::string port, std::function<void(boost::asio::ip::tcp::socket&, int&)> con) :
+ChClientHandler::ChClientHandler(std::string outname, std::string hostname, std::string port, std::function<void(boost::asio::ip::tcp::socket&, int&)> con) :
     ChNetworkHandler(), connect(con) {
     // Lock begins -- the udp socket cannot open during the tcp connection process
     std::unique_lock<std::mutex> lock(socketMutex);
     m_connectionNumber = -1;
     boost::asio::ip::tcp::socket tcpSocket(socket.get_io_service());
     connect(tcpSocket, m_connectionNumber);
+    outFile.open(outname + "-" + std::to_string(m_connectionNumber) + ".csv", std::ios_base::out);
 }
 
 ChClientHandler::~ChClientHandler() {
+    outFile.flush();
+    outFile.close();
     shutdown = true;
     sendQueue.dumpThreads();
     socket.close();
@@ -141,6 +144,10 @@ void ChClientHandler::beginListen() {
         while (socket.is_open() && !shutdown) {
             // This is a pair of a buffer and the endpoint it came from
             auto recPair = receiveMessage();
+            auto then = times.dequeue();
+            auto now = std::chrono::high_resolution_clock::now();
+            outFile << std::chrono::duration_cast<std::chrono::microseconds>(now - then).count() << std::endl;
+
             //TODO: Handle endpoint information here
             boost::asio::streambuf& buffer = *(recPair.second);
             std::istream stream(&buffer);
@@ -191,6 +198,7 @@ void ChClientHandler::beginSend() {
             // Constantly sends messages until handler is shut down or socket is closed
             while (socket.is_open() && !shutdown) {
                 auto buffer = sendQueue.dequeue();
+                times.enqueue(std::chrono::high_resolution_clock::now());
                 sendMessage(serverEndpoint, *buffer);
             }
         } catch (PredicateException ex) {

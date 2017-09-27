@@ -20,8 +20,8 @@ SET(MODEL_FILES
     ChDSRCDriver.h
     ChDSRCSteeringController.cpp
     ChDSRCSteeringController.h
-    DSRCNode.cpp
-    DSRCNode.h
+    # DSRCNode.cpp
+    # DSRCNode.h
     ChBodyFollowerDriver.h
     ChBodyFollowerDriver.cpp
     ChBodyFollowerSteeringController.h
@@ -33,8 +33,8 @@ SET(MODEL_FILES
 # ------------------------------------------------------------------------------
 
 SET(DEMOS
-    sim-tests
-    demo_dsrc
+    # sim-tests
+    # demo_dsrc
     scaling_tester
 )
 

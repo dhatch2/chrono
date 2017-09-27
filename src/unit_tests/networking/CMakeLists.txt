@@ -1,6 +1,6 @@
 # Unit tests for the Chrono::Networking module
 # ==================================================================
-
+return()
 #--------------------------------------------------------------
 # Additional include paths (for ChronoEngine_Utils)
 include_directories(${CH_NETWORKING_INCLUDES})

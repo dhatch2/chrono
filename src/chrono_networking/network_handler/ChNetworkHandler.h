@@ -27,6 +27,8 @@
 #include <boost/asio.hpp>
 #include <exception>
 #include <thread>
+#include <fstream>
+#include <chrono>
 
 #include "MessageCodes.h"
 #include "ChronoMessages.pb.h"
@@ -65,10 +67,10 @@ protected:
 class ChClientHandler : public ChNetworkHandler {
 public:
     // Normal constructor
-    ChClientHandler(std::string hostname, std::string port);
+    ChClientHandler(std::string outname, std::string hostname, std::string port);
 
     // Caller passes in connect(), which is called for initial TCP connection.
-    ChClientHandler(std::string hostname, std::string port, std::function<void(boost::asio::ip::tcp::socket&, int&)> con);
+    ChClientHandler(std::string outname, std::string hostname, std::string port, std::function<void(boost::asio::ip::tcp::socket&, int&)> con);
 
     ~ChClientHandler();
 
@@ -95,6 +97,8 @@ public:
 
     int waitingDSRCMessages();
 
+    std::fstream outFile;
+
 private:
     std::function<void(boost::asio::ip::tcp::socket&, int&)> connect;
     ChSafeQueue<std::shared_ptr<boost::asio::streambuf>> sendQueue;
@@ -103,6 +107,7 @@ private:
     boost::asio::ip::udp::endpoint serverEndpoint;
     boost::asio::ip::udp::endpoint dsrcEndpoint;
     int m_connectionNumber;
+    ChSafeQueue<std::chrono::high_resolution_clock::time_point> times;
 };
 
 class ChServerHandler : public ChNetworkHandler {
