@@ -9,7 +9,6 @@ SET(LIBRARIES
     ChronoEngine_vehicle
     ChronoModels_vehicle
     ChronoEngine_networking
-    ChronoEngine_irrlicht
     boost_system
     pthread
     protobuf
@@ -38,7 +37,7 @@ SET(DEMOS
     scaling_tester
 )
 
-INCLUDE_DIRECTORIES( ${CH_IRRLICHTINC} .)
+INCLUDE_DIRECTORIES( .)
 
 # ------------------------------------------------------------------------------
 # Add all executables
