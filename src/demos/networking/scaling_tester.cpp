@@ -128,10 +128,11 @@ std::string outputFilename;
 
 int main(int argc, char* argv[]) {
 
-    if (argc < 4 || argc > 4) {
-        std::cout << "Usage: " << std::string(argv[0]) << " <ServerHostname> <portnumber> <OutputFilename>" << std::endl;
+    if (argc != 5) {
+        std::cout << "Usage: " << std::string(argv[0]) << " <ServerHostname> <portnumber> <OutputFilename> <duration>" << std::endl;
         return 1;
     }
+    double duration = std::atof(argv[4]);
 
     outputFilename = argv[2];
 
@@ -294,7 +295,7 @@ int main(int argc, char* argv[]) {
         app.SetContactsDrawMode(ChIrrTools::eCh_ContactsDrawMode::CONTACT_FORCES);
     }*/
 
-    while (true) {
+    while (time < duration) {
         time = my_hmmwv.GetSystem()->GetChTime();
 
         // End simulation
