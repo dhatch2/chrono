@@ -129,7 +129,7 @@ bool World::updateElementsOfProfile(endpointProfile *profile, std::shared_ptr< g
         } else return false;
     }
     // Adds remaining vehicles
-    while (!packet->vehiclemessages().empty()) {
+    while (packet->vehiclemessages().size() != 0) {
         std::shared_ptr<ChronoMessages::VehicleMessage> vehiclePtr;
         vehiclePtr.reset(packet->mutable_vehiclemessages()->ReleaseLast());
         updateElement(vehiclePtr, profile, vehiclePtr->idnumber());

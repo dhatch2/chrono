@@ -21,6 +21,7 @@
 
 #include <boost/asio.hpp>
 #include <google/protobuf/message.h>
+#include <set>
 
 #include "ChronoMessages.pb.h"
 
