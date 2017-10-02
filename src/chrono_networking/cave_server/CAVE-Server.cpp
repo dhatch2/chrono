@@ -39,23 +39,34 @@ int main(int argc, char **argv) {
     unsigned short portNumber = (unsigned short)std::stoi(std::string(argv[1]));
     World world;
     ChSafeQueue<std::function<void()>> worldQueue;
+
+    int count = std::thread::hardware_concurrency();
+    // For the main thread
+    count--;
     ChServerHandler handler(portNumber,
         [&] (boost::asio::ip::tcp::socket& tcpSocket, int& connectionCount) {
             handleConnections(world, worldQueue, tcpSocket, connectionCount);
         }
     );
+    // For the listener threads
+    count--;
     handler.beginListen();
     handler.beginSend();
 
-    std::thread worker(processMessages, std::ref(world), std::ref(worldQueue), std::ref(handler));
-
-    std::thread worker2(processMessages, std::ref(world), std::ref(worldQueue), std::ref(handler));
+    // Worker threads
+    std::vector<std::thread> workers;
+    for (count; count > 0; count--) {
+        workers.emplace_back(processMessages, std::ref(world), std::ref(worldQueue), std::ref(handler));
+    }
 
     while (true) {
         worldQueue.dequeue()();
     }
-    worker.join();
-    worker2.join();
+
+    for (size_t i = 0; i < workers.size(); i++) {
+        workers[i].join();
+    }
+
     return 0;
 }
 
@@ -91,6 +102,18 @@ void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueu
         std::string type = descriptor->full_name();
 
         endpointProfile *profile = world.verifyConnection(connectionNumber, endpoint);
+        double chtime;
+        double currtime;
+        if (type.compare(VEHICLE_MESSAGE_TYPE) == 0 && profile != NULL) {
+            auto timeDesc = descriptor->FindFieldByName(CH_TIME_FIELD);
+            chtime = reflection->GetDouble(*message, timeDesc);
+            auto curr = world.getElement(connectionNumber, idNumber);
+            auto currReflection = curr->GetReflection();
+            auto currDescriptor = curr->GetDescriptor();
+            auto currTimeDesc = descriptor->FindFieldByName(CH_TIME_FIELD);
+            currtime = currReflection->GetDouble(*curr, currTimeDesc);
+        }
+
         if (profile == NULL) {
             worldQueue.enqueue([&, message] {
                 if(world.registerEndpoint(endpoint, connectionNumber)) {
@@ -107,7 +130,7 @@ void processMessages(World& world, ChSafeQueue<std::function<void()>>& worldQueu
             });
         } else if (type.compare(MESSAGE_PACKET_TYPE) == 0) {
             worldQueue.enqueue([&, message] { world.updateElementsOfProfile(profile, message); });
-        } else {
+        } else if (chtime > currtime){
             worldQueue.enqueue([&, message] { world.updateElement(message, profile, idNumber); });
         }
         if (profile != NULL) {

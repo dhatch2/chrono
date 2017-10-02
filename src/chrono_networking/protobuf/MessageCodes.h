@@ -43,5 +43,6 @@
 
 #define CONNECTION_NUMBER_FIELD "connectionNumber"
 #define ID_NUMBER_FIELD "idNumber"
+#define CH_TIME_FIELD "chTime"
 
 #endif
