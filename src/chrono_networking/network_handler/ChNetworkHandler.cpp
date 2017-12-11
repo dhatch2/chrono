@@ -144,9 +144,11 @@ void ChClientHandler::beginListen() {
         while (socket.is_open() && !shutdown) {
             // This is a pair of a buffer and the endpoint it came from
             auto recPair = receiveMessage();
-            auto then = times.dequeue();
-            auto now = std::chrono::high_resolution_clock::now();
-            outFile << std::chrono::duration_cast<std::chrono::microseconds>(now - then).count() << std::endl;
+            if (times.size() > 0) {
+                auto then = times.dequeue();
+                auto now = std::chrono::high_resolution_clock::now();
+                outFile << std::chrono::duration_cast<std::chrono::microseconds>(now - then).count() << std::endl;
+            }
 
             //TODO: Handle endpoint information here
             boost::asio::streambuf& buffer = *(recPair.second);
